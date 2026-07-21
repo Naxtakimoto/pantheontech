@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cómo levanté mi propio blog y lo saqué a internet ~ PantheonTech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../estilos.css">
+</head>
+<body>
+
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <div class="term-window">
+
+    <header class="term-bar">
+      <div class="term-dots">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+      </div>
+      <div class="term-title">pablo@pantheontech: ~/blog/pantheontech/post_1</div>
+      <div class="term-bar-spacer"></div>
+    </header>
+
+    <main class="term-body">
+
+      <a class="back-link" href="../../index.html">
+        <span class="arrow">←</span> volver al índice · back to index
+      </a>
+
+      <article>
+
+        <header class="article-header">
+          <p class="article-meta-line">
+            post_1.html <span class="sep">·</span> sysadmin, self-hosting <span class="sep">·</span> 01
+          </p>
+          <h1 class="article-title">
+            Cómo levanté mi propio blog y lo saqué a internet
+            <span class="article-title-en">How I set up my own blog and put it online</span>
+          </h1>
+        </header>
+
+        <div class="article-body">
+
+          <section class="article-section">
+            <h2>
+              El punto de partida
+              <span class="h2-en">The starting point</span>
+            </h2>
+            <p>
+              Quería un sitio propio, servido desde mi propia máquina Linux, sin depender de una
+              plataforma de terceros. Nada de plantillas cerradas: quería controlar cada línea de
+              HTML y CSS, y sobre todo entender qué hay detrás de "publicar algo en internet".
+            </p>
+            <p class="lede-en">
+              I wanted my own site, served from my own Linux machine, without depending on a
+              third-party platform. No closed templates: I wanted to control every line of HTML
+              and CSS, and above all understand what's behind "publishing something on the internet".
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Publicar el sitio
+              <span class="h2-en">Publishing the site</span>
+            </h2>
+            <p>
+              El servidor corre en mi propia infraestructura Linux, expuesto a internet a través de
+              un dominio propio. Antes de abrir nada al exterior, quise asegurarme de que la
+              exposición fuera consciente: qué puertos, qué servicios, y qué pasa si alguien intenta
+              entrar por la puerta de atrás.
+            </p>
+            <p class="lede-en">
+              The server runs on my own Linux infrastructure, exposed to the internet through a
+              custom domain. Before opening anything to the outside, I wanted to make sure the
+              exposure was deliberate: which ports, which services, and what happens if someone
+              tries to get in through the back door.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Auditoría de seguridad propia
+              <span class="h2-en">My own security audit</span>
+            </h2>
+            <p>
+              Antes de dar el sitio por "terminado" hice mi propia auditoría de seguridad, siguiendo
+              una metodología de pentesting completa sobre mi propio servidor. El primer hallazgo
+              fue el más típico: el puerto SSH estaba expuesto en el puerto por defecto, el 22.
+            </p>
+            <p class="lede-en">
+              Before calling the site "finished" I ran my own security audit, working through a
+              full pentesting methodology on my own server. The first finding was the most typical
+              one: SSH was exposed on the default port, 22.
+            </p>
+            <p>
+              A partir de ahí apliqué varias medidas de endurecimiento:
+            </p>
+            <pre><code>- Desactivar la autenticación por contraseña (solo claves SSH)
+- Restringir el acceso root por SSH
+- Cambiar el puerto por defecto del servicio SSH
+- Configurar fail2ban para bloquear intentos repetidos</code></pre>
+            <p class="lede-en">
+              From there I applied several hardening measures: disabling password authentication
+              (SSH keys only), restricting root login over SSH, changing the default SSH port,
+              and setting up fail2ban to block repeated login attempts.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Qué sigue
+              <span class="h2-en">What's next</span>
+            </h2>
+            <p>
+              Como siguiente paso quiero revisar el <code>auth.log</code> con calma para ver si hay
+              rastro de intentos de intrusión previos, y dejarlo como algo que reviso de forma
+              periódica, no solo una vez.
+            </p>
+            <p class="lede-en">
+              As a next step I want to go through <code>auth.log</code> carefully to check for any
+              trace of previous intrusion attempts, and turn that into something I review
+              periodically, not just once.
+            </p>
+          </section>
+
+        </div>
+
+      </article>
+
+      <footer class="term-footer">
+        <p class="prompt-line">
+          <span class="prompt-user">pablo@pantheontech</span><span class="prompt-sep">:</span><span class="prompt-path">~/blog/pantheontech</span><span class="prompt-dollar">$</span>
+          <span class="typed-cmd blink-cursor">_</span>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+
+</body>
+</html>
