@@ -47,66 +47,189 @@
 
           <section class="article-section">
             <h2>
+              La idea:
+              <span class="h2-en">The idea:</span>
+            </h2>
+            <p>
+              Después de haber desarrollado dos proyectos que tenía, 
+              que posteriormente dejaré reflejados en otros post pues se me ocurrió la idea 
+              de que era una buena idea crear un blog para poder tener de una manera digital 
+              mis proyectos, y que de alguna manera quedase reflejado en internet lo que hago 
+              por si alguien lo ve que pueda opinar o simplemente que pueda usar o copiar lo 
+              que yo he hecho porque le guste, por que quiera aprender o simplemente le ha 
+              gustado el blog y quiera leerlo.
+              <br>
+              He de decir que cuando hago mis proyectos me gusta hacer anotaciones a papel 
+              que ahora me van a servir de guía para poder escribir los post de una manera mas ordenada.
+            </p>
+            <p class="lede-en">
+              After having developed two projects that I had, which I will later reflect in other posts, 
+              I came up with the idea that it would be a good idea to create a blog to be able to have my 
+              projects in a digital way, and that somehow what I do would be reflected on the internet so 
+              that if someone sees it, they can give their opinion or simply use or copy what I have done 
+              because they like it, because they want to learn, or simply because they liked the blog and 
+              want to read it.
+              <br>
+              I must say that when I work on my projects, I like to take notes on paper, which will now 
+              serve as a guide for me to write the posts in a more organized way.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
               El punto de partida
               <span class="h2-en">The starting point</span>
             </h2>
             <p>
-              Quería un sitio propio, servido desde mi propia máquina Linux, sin depender de una
-              plataforma de terceros. Nada de plantillas cerradas: quería controlar cada línea de
-              HTML y CSS, y sobre todo entender qué hay detrás de "publicar algo en internet".
+              Lo primero que hice para crear este blog es tener la idea claro esta, luego después de eso puse mis conocimientos 
+              como estudiante que simplemente ha cursado su primero curso de ASIR y pensé la manera de hacerlo, 
+              pero claro, ¿Cómo podía hacerlo bien sin equivocarme? Que me hiciese esa pregunta tiene sentido
+              porque aunque sea estudiante soy principiante y aunque tengas teoría que del mismo internet puedes obtener pues 
+              no es suficiente para poder lograr lo que quieres o al menos así es mi caso, hasta que ya lo 
+              haces una o varias veces y aprendes mediante los errores del proceso o explicaciones de gente que ya lo ha hecho antes que tu. 
+              Por eso mismo lo que hice es usar la IA para planificar el proyecto y poder apoyarme en algo que me pueda corregir 
+              o preguntarle dudas aunque no siempre tenga la razón y tenga que investigar o probar por mi cuenta.
             </p>
             <p class="lede-en">
-              I wanted my own site, served from my own Linux machine, without depending on a
-              third-party platform. No closed templates: I wanted to control every line of HTML
-              and CSS, and above all understand what's behind "publishing something on the internet".
+              The first thing I did to create this blog was to have the idea, of course. Then, after that, 
+              I put my knowledge as a student who has simply completed their first year of ASIR (Systems and Network Administration) 
+              and thought about how to do it, but of course, how could I do it well without making mistakes? Asking myself that 
+              question makes sense because ven though I am a student, I am a beginner, and even if you have theory that you can get 
+              from the internet itself, it is not enough to achieve what you want, or at least that’s the case for me, 
+              until you do it once or several times and learn through the mistakes of the process or explanations from people who have done it before you. 
+              That’s why what I did was use AI to plan the project and be able to rely on something that could correct me or ask questions, 
+              even if it’s not always right and I have to research or try things on my own.
             </p>
           </section>
 
           <section class="article-section">
             <h2>
-              Publicar el sitio
-              <span class="h2-en">Publishing the site</span>
+              Pasos a seguir para la cración:
+              <span class="h2-en">Steps to follow for crearion:</span>
             </h2>
             <p>
-              El servidor corre en mi propia infraestructura Linux, expuesto a internet a través de
-              un dominio propio. Antes de abrir nada al exterior, quise asegurarme de que la
-              exposición fuera consciente: qué puertos, qué servicios, y qué pasa si alguien intenta
-              entrar por la puerta de atrás.
+              Teniendo en cuenta el punto de partida y que ya tenia el plan me dispuse a seguir los pasos que eran los siguientes, 
+              lo primero que hice fue elegir el nombre del blog, el cual elegí el nombre de "PantheonTech", ya que me gusta la mitología 
+              y pues me inspiré en los gladiadores y pues en un nombre que me gustaba usar en los juegos de Pokémon cuando era pequeño 
+              que diré mas adelante.
+              <br>
+              Lo siguiente era elegir un generador de sitios web estáticos, esto lo que hace es generar un sitio web sin que tu tengas que picar 
+              código ya que te lo da hecho, pero esto lo voy a descartar mas adelante pero aun no lo voy a explicar, el lugar por el cual me 
+              decanté fue Astro, que es un lugar que genera paginas web según las necesidades del usuario, en mi caso seguí la planificación que 
+              había planteado junto a la IA y me puse a instalarlo en local en mi pc. Teniendo que hacer uso de la terminal (CLI) de mi equipo que 
+              en este caso es Windows 11, lo que hago es descargar la versión estable de la pagina oficial de Astro un archivo ejecutable que 
+              instalaba los archivos que iba a tener mi web siguiendo los pasos de la IA y de la web oficial de astro me tuve que descargar 
+              node.js (motor interno) y git (gestor de versiones), una vez instalados en la terminal (CLI) de mi equipo seguí los pasos para poder 
+              crear la pagina con Astro, primero lo que hago es ejecutar el comando 'dc .../Desktop' lo que nos situa en el escritorio, 
+              seguidamente el comando npm create astro@latest' lo que va a iniciar el sistema de Astro, seguidamente elijo el nombre de la 
+              carpeta la cual va a tener todos los archivos que genera Astro y por último entramos en carpeta creada con 
+              'dc .../Desktop/nombreCarpeta' e iniciamos el hosting en local con 'npm run dev'.
+              <br>
+              Con esto ahora mismo lo que tenemos es la pagina creada y corriendo en local en el pc pero la idea es que esté en la nube, 
+              y para ello vamos a usar otras herramientas como GitHub y Cloudflare Pages.
             </p>
             <p class="lede-en">
-              The server runs on my own Linux infrastructure, exposed to the internet through a
-              custom domain. Before opening anything to the outside, I wanted to make sure the
-              exposure was deliberate: which ports, which services, and what happens if someone
-              tries to get in through the back door.
+              Taking into account the starting point and that I already had the plan, I set out to follow the steps, which were 
+              as follows. The first thing I did was choose the name of the blog, for which I chose the name “PantheonTech,” since I 
+              like mythology and I was inspired by gladiators and also by a name I liked to use in Pokémon games when I was little, 
+              which I will mention later.
+              <br>
+              The next thing was to choose a static site generator. What this does is generate a website without you having to write 
+              code, as it gives it to you ready-made, but I will discard this later, though I won’t explain it yet. The one I chose was 
+              Astro, which is a platform that generates web pages according to the user’s needs. In my case, I followed the planning I 
+              had laid out together with the AI and set about installing it locally on my PC. Having to use the terminal (CLI) of my 
+              computer, which in this case is Windows 11, what I do is download the stable version from the official Astro website, an 
+              executable file that installed the files that my website would have. Following the steps from the AI and the official 
+              Astro website, I had to download Node.js (internal engine) and Git (version manager). Once installed in the terminal (CLI) 
+              of my computer, I followed the steps to create the page with Astro. First, I run the command ‘cd …/Desktop’, which places 
+              us on the desktop, then the command ‘npm create astro@latest’, which will start the Astro system. Next, I choose the name 
+              of the folder that will contain all the files generated by Astro, and finally, we enter the created folder with 
+              ‘cd …/Desktop/folderName’ and start the local hosting with ‘npm run dev’.
+              <br>
+              With this, what we now have is the page created and running locally on the PC, but the idea is for it to be in the cloud, 
+              and for that, we are going to use other tools like GitHub and Cloudflare Pages.
             </p>
           </section>
 
           <section class="article-section">
             <h2>
-              Auditoría de seguridad propia
-              <span class="h2-en">My own security audit</span>
+              Publicar en la nuve el sitio:
+              <span class="h2-en">Publishing the site in the cloud:</span>
             </h2>
             <p>
-              Antes de dar el sitio por "terminado" hice mi propia auditoría de seguridad, siguiendo
-              una metodología de pentesting completa sobre mi propio servidor. El primer hallazgo
-              fue el más típico: el puerto SSH estaba expuesto en el puerto por defecto, el 22.
+              Después de tener el sitio ya creado lo que tengo que hacer es tenerlo en la nube para que la gente lo pueda ver y yo mismo editar, 
+              pero dentro de mi idea y planificación no estaba la de gastarme dinero en un dominio o en un hosting entonces gracias a la 
+              investigación y a la planificación junto a la IA pues encontré la manera de llevarlo a cabo.
+              <br>
+              La manera era usar GitHub y Cloudflare Pages.
+              <br>
+              Lo primero era adecentar mi antigua cuenta de GitHub que solo la usaba para mirar repositorios y leer a la gente que hace 
+              publicaciones, lo que hice fue ponerme una foto de perfil de un gladiador y un nombre público que es Konan, que es el nombre 
+              que usaba de pequeño en los juegos de Pokémon que he mencionado antes. Al hacer esto lo que hice fue crear un repositorio 
+              público y ponerle de nombre "PamtheonTech" que es el nombre de este blog. Una vez hecho esto con la ayuda de VS Code que es 
+              una Herramienta de programadores que se usa para programar principalmente entre otras cosas pues subí la carpeta que había 
+              hecho con Astro anteriormente al repositorio de GitHub, de esta manera la carpeta quedaba guardada en la nube y no se iba a perder.
+              <br>
+              El siguiente paso era alojar la pagina en un lugar en la nube y usé Cloudflare Pages que tiene una opción de poder vincular 
+              la cuenta de GitHub, de esta manera pude subir mi repositorio de manera automática a Cloudflare Pages y cualquier cambio que 
+              hiciese en el repositorio incluyendo los archivos del mismo se verían reflejados en unos segundos en Cloudflare Pages, de esta 
+              manera podía administrar el blog de manera completamente en la nube y sin gastar dinero y lo que era mas importante es que ya 
+              estaba hosteada y publica en la web.
             </p>
             <p class="lede-en">
-              Before calling the site "finished" I ran my own security audit, working through a
-              full pentesting methodology on my own server. The first finding was the most typical
-              one: SSH was exposed on the default port, 22.
+              After having the site already created, what I need to do is have it in the cloud so that people can see it and I 
+              can edit it myself. But within my idea and planning, I wasn’t planning on spending money on a domain or hosting, 
+              so thanks to research and planning together with the AI, I found a way to make it happen.
+              <br>
+              The way was to use GitHub and Cloudflare Pages.
+              <br>
+              The first thing was to clean up my old GitHub account, which I only used to look at repositories and read what people 
+              were posting. What I did was put a profile picture of a gladiator and a public name, which is Konan, the name I used 
+              as a child in the Pokémon games I mentioned earlier. After doing this, I created a public repository and named it 
+              “PantheonTech,” which is the name of this blog. Once this was done, with the help of VS Code, which is a developer 
+              tool mainly used for programming among other things, I uploaded the folder I had made with Astro earlier to the GitHub 
+              repository. This way, the folder was saved in the cloud and wouldn’t be lost.
+              <br>
+              The next step was to host the page in a cloud location, and I used Cloudflare Pages, which has an option to link a 
+              GitHub account. This way, I was able to upload my repository automatically to Cloudflare Pages, and any changes I 
+              made to the repository, including its files, would be reflected within seconds on Cloudflare Pages. This allowed me 
+              to manage the blog completely in the cloud and without spending any money, and most importantly, it was already hosted 
+              and public on the web.
             </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Problemas y sus resoluciones:
+              <span class="h2-en">Problems and their resolutions:</span>
+            </h2>
             <p>
-              A partir de ahí apliqué varias medidas de endurecimiento:
+              Técnicamente ya estaba todo hecho pero a la hora de gestionar, editar, publicar o hacer cualquier cosa en el 
+              blog no me resultaba nada práctico además de que no entendía la arquitectura de Astro, entonces lo que hice fue poner 
+              en práctica mis conocimientos y llegué a la conclusión que mas vale "malo conocido que bueno por conocer", entonces lo 
+              que hice es destruir toda la arquitectura de Astro y usar el lenguaje de HTML y CSS para hacer y gestionar el blog, ya 
+              que estos idiomas los había trabajado durante el curso y no me resulta difícil entender como funciona y trabajar con 
+              ellos al contrario que Astro que usaba su propia arquitectura y que no había visto nunca.
+              <br>
+              Después de esto tuve que volver a configurar todo para que funcionase con HTML y CSS, en GitHub no hubo mucho problema 
+              ya que era sustituir las carpetas y archivos de astro por mis archivos HTML y CSS, pero en cambio en Cloudflare Pages 
+              tuve varios problemas que con investigación y paciencia no pude resolver, y llegué a la conclusión que lo mejor era 
+              hacerlo de nuevo ya que a veces es mejor dar un paso para atrás para poder dar dos hacia delante y pues rehaciendo todo 
+              por fin todo estaba listo.
             </p>
-            <pre><code>- Desactivar la autenticación por contraseña (solo claves SSH)
-- Restringir el acceso root por SSH
-- Cambiar el puerto por defecto del servicio SSH
-- Configurar fail2ban para bloquear intentos repetidos</code></pre>
             <p class="lede-en">
-              From there I applied several hardening measures: disabling password authentication
-              (SSH keys only), restricting root login over SSH, changing the default SSH port,
-              and setting up fail2ban to block repeated login attempts.
+              Technically, everything was already done, but when it came to managing, editing, publishing, or doing anything on the 
+              blog, it wasn’t practical at all, plus I didn’t understand Astro’s architecture. So what I did was put my knowledge 
+              into practice and came to the conclusion that “better the devil you know than the devil you don’t.” So what I did was 
+              tear down the entire Astro architecture and use HTML and CSS language to create and manage the blog, since I had worked 
+              with these languages during the course and I don’t find it difficult to understand how they work and to work with them, 
+              unlike Astro, which used its own architecture that I had never seen before.
+              <br>
+              After this, I had to reconfigure everything to work with HTML and CSS. On GitHub, there wasn’t much of a problem since 
+              it was just replacing Astro’s folders and files with my HTML and CSS files. However, on Cloudflare Pages, I had several 
+              problems that, despite research and patience, I couldn’t solve. And I came to the conclusion that the best thing was to 
+              do it all over again, since sometimes it’s better to take one step back to be able to take two steps forward. By redoing 
+              everything, everything was finally ready.
             </p>
           </section>
 
@@ -116,14 +239,14 @@
               <span class="h2-en">What's next</span>
             </h2>
             <p>
-              Como siguiente paso quiero revisar el <code>auth.log</code> con calma para ver si hay
-              rastro de intentos de intrusión previos, y dejarlo como algo que reviso de forma
-              periódica, no solo una vez.
+              Como siguiente paso quiero revisar e ir actualizando el blog con nuevos post y/o nuevas 
+              cosas y dejarlo como algo que reviso de forma periódica, no solo una vez. Además de ser el primer 
+              proyecto que publico en el blog.
             </p>
             <p class="lede-en">
-              As a next step I want to go through <code>auth.log</code> carefully to check for any
-              trace of previous intrusion attempts, and turn that into something I review
-              periodically, not just once.
+              As a next step, I want to review and keep updating the blog with new posts and/or new things, 
+              and make it something that I check on a regular basis, not just once. In addition, 
+              this is the first project that I publish on the blog.
             </p>
           </section>
 
