@@ -1,0 +1,236 @@
+:root {
+  --bg: #0a0e13;
+  --surface: #10161d;
+  --border: #212b35;
+  --text: #cfd8e2;
+  --text-dim: #6b7686;
+  --accent: #e3a548;   /* ambar fósforo, tinta de viejos terminales */
+  --accent-dim: #8a6a35;
+  --cyan: #5fc7bd;
+  --danger: #c9615a;
+  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --font-body: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+}
+
+body {
+  padding: 32px 16px 64px;
+  position: relative;
+}
+
+/* sutil textura de escaneado de CRT, muy discreta */
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.015) 0px,
+    rgba(255, 255, 255, 0.015) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+  z-index: 1;
+}
+
+.term-window {
+  max-width: 780px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.term-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #0d1319;
+  border-bottom: 1px solid var(--border);
+}
+
+.term-dots { display: flex; gap: 7px; }
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.85;
+}
+.dot-r { background: #e0605a; }
+.dot-y { background: #e3b148; }
+.dot-g { background: #5fc77a; }
+
+.term-title {
+  font-size: 12.5px;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+}
+
+.term-bar-spacer { flex: 1; }
+
+.term-body {
+  padding: 40px clamp(20px, 5vw, 52px) 32px;
+}
+
+.prompt-line {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  color: var(--text-dim);
+  margin: 0 0 18px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.prompt-user { color: var(--cyan); }
+.prompt-sep { color: var(--text-dim); }
+.prompt-path { color: var(--accent); }
+.prompt-dollar { color: var(--text-dim); margin: 0 6px 0 2px; }
+.typed-cmd { color: var(--text); }
+
+.prompt-output h1 {
+  font-family: var(--font-mono);
+  font-size: clamp(28px, 5vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--accent);
+  margin: 0 0 14px;
+}
+
+.lede {
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--text);
+  max-width: 58ch;
+  margin: 0;
+}
+
+.lede abbr {
+  text-decoration: none;
+  border-bottom: 1px dashed var(--text-dim);
+  cursor: help;
+}
+
+.listing-block { margin-top: 48px; }
+
+.post-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+
+.post-row {
+  border-bottom: 1px solid var(--border);
+}
+
+.post-link {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 6px;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.15s ease, padding-left 0.15s ease;
+}
+
+.post-link:hover,
+.post-link:focus-visible {
+  background: rgba(227, 165, 72, 0.06);
+  padding-left: 12px;
+}
+
+.post-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.post-index {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--accent-dim);
+  min-width: 22px;
+}
+
+.post-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.post-title {
+  font-size: 15.5px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.post-title-placeholder {
+  font-size: 14.5px;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.post-meta {
+  font-size: 12px;
+  color: var(--cyan);
+  letter-spacing: 0.01em;
+}
+
+.post-arrow {
+  color: var(--text-dim);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.post-link:hover .post-arrow,
+.post-link:focus-visible .post-arrow {
+  color: var(--accent);
+  transform: translateX(3px);
+}
+
+.post-row--empty {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 6px;
+  opacity: 0.6;
+}
+
+.term-footer {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.blink-cursor {
+  animation: blink 1.1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blink-cursor { animation: none; }
+}
+
+@media (max-width: 520px) {
+  .term-body { padding: 32px 18px 28px; }
+  .prompt-line { font-size: 12px; }
+  .post-meta { display: block; }
+}
