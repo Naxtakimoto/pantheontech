@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sincronización de partidas y multijugador para MelonDS: Syncthing, dnsmasq y Tailscale ~ PantheonTech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../estilos.css">
+</head>
+<body>
+
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <div class="term-window">
+
+    <header class="term-bar">
+      <div class="term-dots">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+      </div>
+      <div class="term-title">pablo@pantheontech: ~/blog/pantheontech/post_4</div>
+      <div class="term-bar-spacer"></div>
+    </header>
+
+    <main class="term-body">
+
+      <a class="back-link" href="../../index.html">
+        <span class="arrow">←</span> volver al índice · back to index
+      </a>
+
+      <article>
+
+        <header class="article-header">
+          <p class="article-meta-line">
+            post_4.html <span class="sep">·</span> proyectos, ocio, redes <span class="sep">·</span> 04
+          </p>
+          <h1 class="article-title">
+            Sincronización de partidas y multijugador para MelonDS: Syncthing, dnsmasq y Tailscale
+            <span class="article-title-en">Save-file sync and multiplayer for MelonDS: Syncthing, dnsmasq, and Tailscale</span>
+          </h1>
+        </header>
+
+        <div class="article-body">
+
+          <section class="article-section">
+            <h2>
+              Por qué este proyecto
+              <span class="h2-en">Why this project</span>
+            </h2>
+            <p>
+              Este proyecto es más lúdico que los anteriores: lo he hecho porque me gusta Pokémon, y me
+              apetecía montar algo así para poder jugar con amigos. No busca resolver un problema de
+              trabajo ni de infraestructura crítica, sino usar lo que ya sé de sistemas y redes para algo
+              que simplemente me apetecía tener funcionando.
+            </p>
+            <p class="lede-en">
+              This project is more playful than the previous ones: I built it because I like Pokémon, and I
+              wanted to set something like this up to play with friends. It's not solving a work problem or
+              critical infrastructure — it's using what I already know about systems and networking for
+              something I just wanted to have running.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Visión general del proyecto
+              <span class="h2-en">Project overview</span>
+            </h2>
+            <p>
+              Objetivo: un servidor centralizado para la sincronización de partidas guardadas (archivos
+              <code>.sav</code>) y un servidor de conexión/redirección DNS para partidas multijugador en
+              emuladores como MelonDS.
+            </p>
+            <p>
+              Sistema operativo base: Debian.
+            </p>
+            <p class="lede-en">
+              Goal: a centralized server for syncing save files (<code>.sav</code>) and a DNS
+              connection/redirection server for multiplayer games on emulators like MelonDS.
+            </p>
+            <p class="lede-en">
+              Base operating system: Debian.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Componentes de la arquitectura y su creación
+              <span class="h2-en">Architecture components and how I built them</span>
+            </h2>
+
+            <h3>Servicio de sincronización (Syncthing vía Docker Compose)</h3>
+            <ul>
+              <li>Despliegue mediante Docker Compose utilizando la imagen oficial <code>syncthing/syncthing:latest</code>.</li>
+              <li>Uso de la variable de entorno <code>STGUIADDRESS=0.0.0.0:8384</code> para forzar la exposición de la interfaz web (GUI) en todas las interfaces de red.</li>
+              <li>Gestión de permisos de volúmenes locales en Debian (<code>chown -R 1000:1000 /opt/syncthing</code>) para resolver conflictos de escritura en los certificados SSL y archivos de configuración.</li>
+            </ul>
+            <p class="lede-en">
+              Sync service (Syncthing via Docker Compose):
+            </p>
+            <ul class="lede-en">
+              <li>Deployed with Docker Compose using the official <code>syncthing/syncthing:latest</code> image.</li>
+              <li>Used the <code>STGUIADDRESS=0.0.0.0:8384</code> environment variable to force the web GUI to be exposed on all network interfaces.</li>
+              <li>Managed local volume permissions on Debian (<code>chown -R 1000:1000 /opt/syncthing</code>) to fix write conflicts on SSL certificates and config files.</li>
+            </ul>
+
+            <h3>Servicio de redirección para el juego multijugador (DNS local)</h3>
+            <ul>
+              <li>Implementación nativa con <code>dnsmasq</code> para evitar problemas de compatibilidad con contenedores o repositorios de GitHub obsoletos.</li>
+              <li>Configuración del archivo <code>/etc/dnsmasq.conf</code> para responder al test de conexión (<code>conntest.nintendowifi.net</code>) apuntando a la IP local, y redirigir el tráfico del juego (<code>nintendowifi.net</code>) hacia los servidores comunitarios (Kaeru/AltWFC).</li>
+            </ul>
+            <p class="lede-en">
+              Redirection service for multiplayer (local DNS):
+            </p>
+            <ul class="lede-en">
+              <li>Native implementation with <code>dnsmasq</code>, to avoid compatibility issues with containers or outdated GitHub repos.</li>
+              <li>Configured <code>/etc/dnsmasq.conf</code> to answer the connection test (<code>conntest.nintendowifi.net</code>) by pointing to the local IP, and to redirect the game's traffic (<code>nintendowifi.net</code>) to the community servers (Kaeru/AltWFC).</li>
+            </ul>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Conectividad externa y VPN mesh (superando la CG-NAT)
+              <span class="h2-en">External connectivity and mesh VPN (getting around CG-NAT)</span>
+            </h2>
+            <ul>
+              <li>Integración de Tailscale para saltar las restricciones de puertos y CG-NAT impuestas por el proveedor de internet (ISP).</li>
+              <li>Asignación de una IP fija virtual dentro de la red mesh (<code>100.x.x.x</code>) tanto para el servidor Debian como para los dispositivos remotos de los jugadores.</li>
+            </ul>
+            <p class="lede-en">
+              External connectivity and mesh VPN (getting around CG-NAT):
+            </p>
+            <ul class="lede-en">
+              <li>Integrated Tailscale to get around the port restrictions and CG-NAT imposed by the internet provider (ISP).</li>
+              <li>Assigned a fixed virtual IP within the mesh network (<code>100.x.x.x</code>) both for the Debian server and for the players' remote devices.</li>
+            </ul>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Flujo de funcionamiento paso a paso
+              <span class="h2-en">Step-by-step operation flow</span>
+            </h2>
+
+            <h3>Para el guardado en la nube</h3>
+            <p>
+              MelonDS guarda el archivo <code>.sav</code> → Syncthing en el PC local detecta el cambio →
+              transfiere los datos de forma cifrada al servidor Debian a través del túnel de Tailscale →
+              Debian mantiene la copia de seguridad centralizada.
+            </p>
+            <p class="lede-en">
+              For cloud saving: MelonDS saves the <code>.sav</code> file → Syncthing on the local PC detects
+              the change → transfers the data encrypted to the Debian server through the Tailscale tunnel →
+              Debian keeps the centralized backup.
+            </p>
+
+            <h3>Para el multijugador en línea</h3>
+            <p>
+              MelonDS apunta su DNS primario a la IP de Tailscale del servidor Debian → Debian valida la
+              conexión Wi-Fi de la Nintendo DS emulada → redirige la partida a los servidores de la
+              comunidad sin necesidad de abrir puertos en el router.
+            </p>
+            <p class="lede-en">
+              For online multiplayer: MelonDS points its primary DNS to the Debian server's Tailscale IP →
+              Debian validates the emulated Nintendo DS's Wi-Fi connection → redirects the game to the
+              community servers without needing to open any ports on the router.
+            </p>
+          </section>
+
+        </div>
+
+      </article>
+
+      <footer class="term-footer">
+        <p class="prompt-line">
+          <span class="prompt-user">pablo@pantheontech</span><span class="prompt-sep">:</span><span class="prompt-path">~/blog/pantheontech</span><span class="prompt-dollar">$</span>
+          <span class="typed-cmd blink-cursor">_</span>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+
+</body>
+</html>
