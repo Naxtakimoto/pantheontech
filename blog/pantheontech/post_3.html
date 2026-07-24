@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortafuegos con nftables: política DROP + Tailscale ~ PantheonTech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../estilos.css">
+</head>
+<body>
+
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <div class="term-window">
+
+    <header class="term-bar">
+      <div class="term-dots">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+      </div>
+      <div class="term-title">pablo@pantheontech: ~/blog/pantheontech/post_3</div>
+      <div class="term-bar-spacer"></div>
+    </header>
+
+    <main class="term-body">
+
+      <a class="back-link" href="../../index.html">
+        <span class="arrow">←</span> volver al índice · back to index
+      </a>
+
+      <article>
+
+        <header class="article-header">
+          <p class="article-meta-line">
+            post_3.html <span class="sep">·</span> sysadmin, seguridad, redes <span class="sep">·</span> 03
+          </p>
+          <h1 class="article-title">
+            Cortafuegos con nftables: política DROP + Tailscale
+            <span class="article-title-en">Firewall with nftables: DROP policy + Tailscale</span>
+          </h1>
+        </header>
+
+        <div class="article-body">
+
+          <section class="article-section">
+            <h2>
+              El plan de seguridad
+              <span class="h2-en">The security plan</span>
+            </h2>
+            <p>
+              Para asegurarnos de que todo funcione sin bloqueos accidentales, aplicaremos estas reglas clave:
+            </p>
+            <ol>
+              <li>Política de entrada bloqueada por defecto (<code>DROP</code>): nadie podrá entrar al servidor si no hay una regla explícita que lo permita.</li>
+              <li>Permitir tráfico de salida: tu servidor podrá conectarse a internet para actualizarse o descargar portadas en Jellyfin.</li>
+              <li>Mantener conexiones establecidas (<code>Stateful</code>): si el servidor pide algo hacia afuera, el cortafuegos dejará entrar la respuesta automáticamente.</li>
+              <li>Permitir tráfico local interno (<code>lo</code> / <code>localhost</code>): para que las aplicaciones se comuniquen entre sí internamente.</li>
+              <li>Permitir la interfaz de Tailscale (<code>tailscale0</code>): para que tengas acceso total remoto a todos tus servicios (Jellyfin, qBittorrent, SSH) sin importar qué puertos usen, pero solo desde tus dispositivos de la red privada.</li>
+              <li>Permitir tráfico local de casa (opcional pero recomendado): para que tus dispositivos conectados al WiFi de casa sigan viendo a Jellyfin directamente sin pasar por Tailscale si no quieres.</li>
+            </ol>
+            <p class="lede-en">
+              To make sure everything works without accidental lockouts, we'll apply these key rules:
+            </p>
+            <ol class="lede-en">
+              <li>Default-deny inbound policy (<code>DROP</code>): nobody can reach the server unless there's an explicit rule allowing it.</li>
+              <li>Allow outbound traffic: your server can reach the internet to update itself or fetch cover art in Jellyfin.</li>
+              <li>Keep established connections (<code>Stateful</code>): if the server requests something outbound, the firewall will let the response back in automatically.</li>
+              <li>Allow internal loopback traffic (<code>lo</code> / <code>localhost</code>): so applications can talk to each other internally.</li>
+              <li>Allow the Tailscale interface (<code>tailscale0</code>): so you get full remote access to all your services (Jellyfin, qBittorrent, SSH) regardless of the ports they use, but only from your private network's devices.</li>
+              <li>Allow local home traffic (optional but recommended): so your devices on the home WiFi keep seeing Jellyfin directly without going through Tailscale if you'd rather not.</li>
+            </ol>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Paso a paso para configurar <code>nftables</code>
+              <span class="h2-en">Step by step: setting up <code>nftables</code></span>
+            </h2>
+            <p>
+              Conéctate por SSH a tu Debian y sigue estos pasos:
+            </p>
+            <p class="lede-en">
+              Connect to your Debian machine over SSH and follow these steps:
+            </p>
+
+            <h3>Paso 1: Instalar y habilitar <code>nftables</code></h3>
+            <p>
+              Asegúrate de que la herramienta esté instalada y se ejecute al encender el sistema:
+            </p>
+            <pre><code>sudo apt update && sudo apt install nftables -y
+sudo systemctl enable nftables</code></pre>
+            <p class="lede-en">
+              Make sure the tool is installed and starts automatically on boot:
+            </p>
+
+            <h3>Paso 2: Crear el archivo de reglas</h3>
+            <p>
+              Vamos a sobrescribir la configuración por defecto de <code>nftables</code> creando un archivo
+              limpio con nuestra estrategia. Abre el archivo de configuración con el editor:
+            </p>
+            <pre><code>sudo nano /etc/nftables.conf</code></pre>
+            <p>
+              Borra todo lo que haya dentro y copia y pega el siguiente bloque completo:
+            </p>
+            <pre><code>#!/usr/sbin/nft -f
+
+flush ruleset
+
+table inet filter {
+    chain input {
+        type filter hook input priority filter; policy drop;
+
+        # 1. Permitir tráfico de loopback (comunicación interna del servidor)
+        iif "lo" accept
+
+        # 2. Permitir conexiones ya establecidas o relacionadas (Stateful Firewall)
+        ct state established,related accept
+
+        # 3. Rechazar paquetes inválidos por seguridad
+        ct state invalid drop
+
+        # 4. Permitir todo el tráfico a través de la interfaz de Tailscale
+        iifname "tailscale0" accept
+
+        # 5. Permitir tráfico de tu red local de casa (IPs 192.168.1.X)
+        # Ajusta "192.168.1.0/24" si tu red local usa otro rango (ej. 192.168.0.0/24)
+        ip saddr 192.168.1.0/24 accept
+
+        # 6. Permitir PING (ICMP) para diagnóstico local
+        ip protocol icmp accept
+    }
+
+    chain forward {
+        type filter hook forward priority filter; policy drop;
+    }
+
+    chain output {
+        type filter hook output priority filter; policy accept;
+    }
+}</code></pre>
+            <p>
+              Nota sobre el guardado: presiona <code>Ctrl + O</code>, luego <code>Enter</code> para guardar,
+              y <code>Ctrl + X</code> para salir.
+            </p>
+            <p class="lede-en">
+              We're going to overwrite nftables' default configuration with a clean file containing our
+              strategy. Open the config file with the editor, clear everything inside it, and paste in the
+              block above. Saving note: press <code>Ctrl + O</code>, then <code>Enter</code> to save, and
+              <code>Ctrl + X</code> to exit.
+            </p>
+
+            <h3>Paso 3: Probar y aplicar la configuración</h3>
+            <p>
+              Para asegurarnos de que la sintaxis sea correcta antes de activarlo permanentemente, ejecuta
+              un chequeo de prueba:
+            </p>
+            <pre><code>sudo nft -c -f /etc/nftables.conf</code></pre>
+            <p>
+              Si no devuelve ningún mensaje de error, ¡todo está perfecto! Ahora reinicia el servicio de
+              <code>nftables</code> para aplicar el cortafuegos de inmediato:
+            </p>
+            <pre><code>sudo systemctl restart nftables</code></pre>
+            <p class="lede-en">
+              To make sure the syntax is correct before enabling it permanently, run a test check. If it
+              doesn't return any error message, everything's perfect! Now restart the <code>nftables</code>
+              service to apply the firewall immediately.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              ¿Cómo comprobar que el cortafuegos está funcionando?
+              <span class="h2-en">How to check the firewall is working</span>
+            </h2>
+            <p>
+              Para ver el estado real de tu cortafuegos y las reglas que se están aplicando en tiempo real,
+              puedes ejecutar:
+            </p>
+            <pre><code>sudo nft list ruleset</code></pre>
+            <p>
+              Verás tu tabla estructurada. A partir de este momento:
+            </p>
+            <ul>
+              <li>Cualquier intento de acceso desde internet fuera de tu red local o fuera de tu red Tailscale será rechazado automáticamente.</li>
+              <li>Tu acceso por SSH desde la red local o desde Tailscale seguirá funcionando al 100%.</li>
+              <li>Jellyfin, qBittorrent y las actualizaciones automáticas no tendrán ninguna interrupción.</li>
+            </ul>
+            <p class="lede-en">
+              To see the real status of your firewall and the rules being applied in real time, you can run
+              the command above. You'll see your structured table. From this point on:
+            </p>
+            <ul class="lede-en">
+              <li>Any access attempt from the internet outside your local network or your Tailscale network will be rejected automatically.</li>
+              <li>Your SSH access from the local network or from Tailscale will keep working 100%.</li>
+              <li>Jellyfin, qBittorrent, and automatic updates won't have any interruption.</li>
+            </ul>
+          </section>
+
+        </div>
+
+      </article>
+
+      <footer class="term-footer">
+        <p class="prompt-line">
+          <span class="prompt-user">pablo@pantheontech</span><span class="prompt-sep">:</span><span class="prompt-path">~/blog/pantheontech</span><span class="prompt-dollar">$</span>
+          <span class="typed-cmd blink-cursor">_</span>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+
+</body>
+</html>
