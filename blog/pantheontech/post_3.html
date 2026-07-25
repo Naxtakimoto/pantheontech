@@ -47,63 +47,69 @@
 
           <section class="article-section">
             <h2>
-              El plan de seguridad
-              <span class="h2-en">The security plan</span>
+              El plan
+              <span class="h2-en">The plan</span>
             </h2>
             <p>
-              Para asegurarnos de que todo funcione sin bloqueos accidentales, aplicaremos estas reglas clave:
+              Con el servidor ya funcionando (Jellyfin, qBittorrent, Tailscale...) me quedaba la parte que
+              más pereza me daba: el cortafuegos. Da un poco de miedo tocarlo, la verdad, porque como te
+              equivoques te puedes quedar fuera de tu propio servidor. Así que antes de nada me planteé
+              unas reglas claras para no liarla:
             </p>
             <ol>
-              <li>Política de entrada bloqueada por defecto (<code>DROP</code>): nadie podrá entrar al servidor si no hay una regla explícita que lo permita.</li>
-              <li>Permitir tráfico de salida: tu servidor podrá conectarse a internet para actualizarse o descargar portadas en Jellyfin.</li>
-              <li>Mantener conexiones establecidas (<code>Stateful</code>): si el servidor pide algo hacia afuera, el cortafuegos dejará entrar la respuesta automáticamente.</li>
-              <li>Permitir tráfico local interno (<code>lo</code> / <code>localhost</code>): para que las aplicaciones se comuniquen entre sí internamente.</li>
-              <li>Permitir la interfaz de Tailscale (<code>tailscale0</code>): para que tengas acceso total remoto a todos tus servicios (Jellyfin, qBittorrent, SSH) sin importar qué puertos usen, pero solo desde tus dispositivos de la red privada.</li>
-              <li>Permitir tráfico local de casa (opcional pero recomendado): para que tus dispositivos conectados al WiFi de casa sigan viendo a Jellyfin directamente sin pasar por Tailscale si no quieres.</li>
+              <li>Política de entrada bloqueada por defecto (<code>DROP</code>): nadie entra si no hay una regla explícita que lo permita.</li>
+              <li>Permitir tráfico de salida: que el servidor pueda actualizarse o descargar portadas en Jellyfin.</li>
+              <li>Mantener conexiones establecidas (<code>Stateful</code>): si el servidor pide algo hacia afuera, que la respuesta pueda entrar sola.</li>
+              <li>Permitir tráfico local interno (<code>lo</code> / <code>localhost</code>): para que las aplicaciones se hablen entre sí.</li>
+              <li>Permitir la interfaz de Tailscale (<code>tailscale0</code>): para tener acceso total a todos mis servicios (Jellyfin, qBittorrent, SSH) desde mis propios dispositivos, sin importar el puerto.</li>
+              <li>Permitir tráfico local de casa (opcional, pero lo dejé puesto): para que los dispositivos del WiFi de casa sigan viendo Jellyfin directamente sin pasar por Tailscale.</li>
             </ol>
             <p class="lede-en">
-              To make sure everything works without accidental lockouts, we'll apply these key rules:
+              With the server already running (Jellyfin, qBittorrent, Tailscale...) the part I was
+              dreading the most was left: the firewall. It's a bit scary to touch, honestly, because if you
+              mess it up you can lock yourself out of your own server. So before doing anything I laid out
+              some clear rules for myself so I wouldn't screw it up:
             </p>
             <ol class="lede-en">
-              <li>Default-deny inbound policy (<code>DROP</code>): nobody can reach the server unless there's an explicit rule allowing it.</li>
-              <li>Allow outbound traffic: your server can reach the internet to update itself or fetch cover art in Jellyfin.</li>
-              <li>Keep established connections (<code>Stateful</code>): if the server requests something outbound, the firewall will let the response back in automatically.</li>
-              <li>Allow internal loopback traffic (<code>lo</code> / <code>localhost</code>): so applications can talk to each other internally.</li>
-              <li>Allow the Tailscale interface (<code>tailscale0</code>): so you get full remote access to all your services (Jellyfin, qBittorrent, SSH) regardless of the ports they use, but only from your private network's devices.</li>
-              <li>Allow local home traffic (optional but recommended): so your devices on the home WiFi keep seeing Jellyfin directly without going through Tailscale if you'd rather not.</li>
+              <li>Default-deny inbound policy (<code>DROP</code>): nobody gets in unless there's an explicit rule allowing it.</li>
+              <li>Allow outbound traffic: so the server can update itself or fetch cover art in Jellyfin.</li>
+              <li>Keep established connections (<code>Stateful</code>): if the server requests something outbound, let the response back in on its own.</li>
+              <li>Allow internal loopback traffic (<code>lo</code> / <code>localhost</code>): so applications can talk to each other.</li>
+              <li>Allow the Tailscale interface (<code>tailscale0</code>): to have full access to all my services (Jellyfin, qBittorrent, SSH) from my own devices, regardless of the port.</li>
+              <li>Allow local home traffic (optional, but I left it on): so devices on the home WiFi keep seeing Jellyfin directly without going through Tailscale.</li>
             </ol>
           </section>
 
           <section class="article-section">
             <h2>
-              Paso a paso para configurar <code>nftables</code>
-              <span class="h2-en">Step by step: setting up <code>nftables</code></span>
+              Cómo lo configuré, paso a paso
+              <span class="h2-en">How I set it up, step by step</span>
             </h2>
             <p>
-              Conéctate por SSH a tu Debian y sigue estos pasos:
+              Me conecté por SSH a mi Debian y fui haciendo esto:
             </p>
             <p class="lede-en">
-              Connect to your Debian machine over SSH and follow these steps:
+              I connected to my Debian machine over SSH and did this:
             </p>
 
-            <h3>Paso 1: Instalar y habilitar <code>nftables</code></h3>
+            <h3>Paso 1: instalar y habilitar <code>nftables</code></h3>
             <p>
-              Asegúrate de que la herramienta esté instalada y se ejecute al encender el sistema:
+              Lo primero, asegurarme de que la herramienta estaba instalada y arrancaba con el sistema:
             </p>
             <pre><code>sudo apt update && sudo apt install nftables -y
 sudo systemctl enable nftables</code></pre>
             <p class="lede-en">
-              Make sure the tool is installed and starts automatically on boot:
+              First thing, making sure the tool was installed and would start with the system:
             </p>
 
-            <h3>Paso 2: Crear el archivo de reglas</h3>
+            <h3>Paso 2: crear el archivo de reglas</h3>
             <p>
-              Vamos a sobrescribir la configuración por defecto de <code>nftables</code> creando un archivo
-              limpio con nuestra estrategia. Abre el archivo de configuración con el editor:
+              Aquí sobrescribí la configuración por defecto de <code>nftables</code> con un archivo limpio
+              siguiendo mi propia estrategia. Abrí el archivo de configuración con el editor:
             </p>
             <pre><code>sudo nano /etc/nftables.conf</code></pre>
             <p>
-              Borra todo lo que haya dentro y copia y pega el siguiente bloque completo:
+              Borré todo lo que había dentro y pegué este bloque:
             </p>
             <pre><code>#!/usr/sbin/nft -f
 
@@ -142,60 +148,58 @@ table inet filter {
     }
 }</code></pre>
             <p>
-              Nota sobre el guardado: presiona <code>Ctrl + O</code>, luego <code>Enter</code> para guardar,
-              y <code>Ctrl + X</code> para salir.
+              Nota para no perder tiempo buscándolo luego: para guardar en nano es <code>Ctrl + O</code>,
+              <code>Enter</code>, y para salir <code>Ctrl + X</code>.
             </p>
             <p class="lede-en">
-              We're going to overwrite nftables' default configuration with a clean file containing our
-              strategy. Open the config file with the editor, clear everything inside it, and paste in the
-              block above. Saving note: press <code>Ctrl + O</code>, then <code>Enter</code> to save, and
-              <code>Ctrl + X</code> to exit.
+              Here I overwrote nftables' default config with a clean file following my own strategy. I
+              opened the config file with the editor, deleted everything inside, and pasted the block above.
+              Note so I don't waste time looking it up again later: to save in nano it's <code>Ctrl + O</code>,
+              <code>Enter</code>, and to exit <code>Ctrl + X</code>.
             </p>
 
-            <h3>Paso 3: Probar y aplicar la configuración</h3>
+            <h3>Paso 3: probar antes de aplicar</h3>
             <p>
-              Para asegurarnos de que la sintaxis sea correcta antes de activarlo permanentemente, ejecuta
-              un chequeo de prueba:
+              Antes de dejarlo activo de forma permanente, comprobé que la sintaxis fuera correcta:
             </p>
             <pre><code>sudo nft -c -f /etc/nftables.conf</code></pre>
             <p>
-              Si no devuelve ningún mensaje de error, ¡todo está perfecto! Ahora reinicia el servicio de
-              <code>nftables</code> para aplicar el cortafuegos de inmediato:
+              Si no devuelve ningún error, va bien. Entonces reinicié el servicio para que el cortafuegos
+              se aplicase ya mismo:
             </p>
             <pre><code>sudo systemctl restart nftables</code></pre>
             <p class="lede-en">
-              To make sure the syntax is correct before enabling it permanently, run a test check. If it
-              doesn't return any error message, everything's perfect! Now restart the <code>nftables</code>
-              service to apply the firewall immediately.
+              Before leaving it on permanently, I checked the syntax was correct. If it doesn't return any
+              error, you're good. Then I restarted the service so the firewall would apply right away.
             </p>
           </section>
 
           <section class="article-section">
             <h2>
-              ¿Cómo comprobar que el cortafuegos está funcionando?
-              <span class="h2-en">How to check the firewall is working</span>
+              Comprobar que funciona
+              <span class="h2-en">Checking that it works</span>
             </h2>
             <p>
-              Para ver el estado real de tu cortafuegos y las reglas que se están aplicando en tiempo real,
-              puedes ejecutar:
+              Para ver el estado real del cortafuegos y las reglas que se están aplicando en el momento,
+              uso este comando:
             </p>
             <pre><code>sudo nft list ruleset</code></pre>
             <p>
-              Verás tu tabla estructurada. A partir de este momento:
+              Y ahí sale la tabla montada tal cual la escribí. Desde ese momento:
             </p>
             <ul>
-              <li>Cualquier intento de acceso desde internet fuera de tu red local o fuera de tu red Tailscale será rechazado automáticamente.</li>
-              <li>Tu acceso por SSH desde la red local o desde Tailscale seguirá funcionando al 100%.</li>
-              <li>Jellyfin, qBittorrent y las actualizaciones automáticas no tendrán ninguna interrupción.</li>
+              <li>Cualquier intento de acceso desde internet fuera de mi red local o de Tailscale se rechaza automáticamente.</li>
+              <li>Mi acceso por SSH desde la red local o desde Tailscale sigue funcionando al 100%.</li>
+              <li>Jellyfin, qBittorrent y las actualizaciones automáticas no han tenido ninguna interrupción.</li>
             </ul>
             <p class="lede-en">
-              To see the real status of your firewall and the rules being applied in real time, you can run
-              the command above. You'll see your structured table. From this point on:
+              To see the firewall's real status and the rules being applied at that moment, I use the
+              command above. And there's the table exactly as I wrote it. From that point on:
             </p>
             <ul class="lede-en">
-              <li>Any access attempt from the internet outside your local network or your Tailscale network will be rejected automatically.</li>
-              <li>Your SSH access from the local network or from Tailscale will keep working 100%.</li>
-              <li>Jellyfin, qBittorrent, and automatic updates won't have any interruption.</li>
+              <li>Any access attempt from the internet outside my local network or Tailscale gets rejected automatically.</li>
+              <li>My SSH access from the local network or from Tailscale keeps working 100%.</li>
+              <li>Jellyfin, qBittorrent, and the automatic updates haven't had any interruption.</li>
             </ul>
           </section>
 

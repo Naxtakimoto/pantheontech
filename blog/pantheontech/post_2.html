@@ -47,76 +47,96 @@
 
           <section class="article-section">
             <h2>
-              Configuración de almacenamiento y servicios centrales
-              <span class="h2-en">Storage setup and core services</span>
+              Almacenamiento y servicios centrales
+              <span class="h2-en">Storage and core services</span>
             </h2>
             <p>
-              Sistema operativo: Debian Linux. Sobre él instalé y configuré Jellyfin (servidor de medios) y
-              qBittorrent-nox (cliente de torrents con WebUI).
+              Aquí ya tocaba montar algo que usara de verdad en el día a día, no solo un proyecto de
+              práctica: un servidor de medios en casa. Todo sobre Debian, que es el sistema que ya venía
+              usando. Encima instalé y configuré Jellyfin (el servidor de medios) y qBittorrent-nox (el
+              cliente de torrents con su WebUI), y de ahí para adelante lo que más tiempo me llevó fue
+              dejar las carpetas y los permisos bien atados, porque como es lo primero que tocas y no lo
+              cuidas, luego todo son conflictos de lectura entre programas.
             </p>
             <p>
-              Configuración de carpetas e integración:
+              Así quedó la configuración de carpetas e integración:
             </p>
             <ul>
               <li>Estructura de directorios nativa para descargas: <code>/var/lib/qbittorrent/Downloads/</code>.</li>
               <li>Permisos de archivos: asegurar propiedad del usuario <code>qbittorrent</code> (<code>chown -R qbittorrent:qbittorrent</code>) y permisos <code>755</code>/<code>775</code> (<code>chmod</code>).</li>
-              <li>Asignación de grupos: añadir el usuario <code>jellyfin</code> al grupo <code>qbittorrent</code> (<code>usermod -aG qbittorrent jellyfin</code>) para permitir lectura de medios sin conflictos de permisos.</li>
-              <li>Mapeo en Jellyfin: apuntar las bibliotecas de Jellyfin exactamente a las subcarpetas de descarga.</li>
+              <li>Asignación de grupos: añadir el usuario <code>jellyfin</code> al grupo <code>qbittorrent</code> (<code>usermod -aG qbittorrent jellyfin</code>) para que pudiera leer los medios sin líos de permisos.</li>
+              <li>Mapeo en Jellyfin: apuntar las bibliotecas exactamente a las subcarpetas de descarga.</li>
             </ul>
             <p class="lede-en">
-              Operating system: Debian Linux. On top of it I installed and configured Jellyfin (media server)
-              and qBittorrent-nox (torrent client with a WebUI).
+              This is where it was time to build something I'd actually use day to day, not just a
+              practice project: a home media server. All on Debian, the system I was already using. On top
+              of it I installed and configured Jellyfin (the media server) and qBittorrent-nox (the torrent
+              client with its WebUI), and from there what took me the most time was getting the folders and
+              permissions properly sorted, because that's the first thing you touch and if you don't get it
+              right, everything ends up being read conflicts between programs.
             </p>
             <p class="lede-en">
-              Folder setup and integration:
+              This is how the folder setup and integration ended up:
             </p>
             <ul class="lede-en">
               <li>Native download directory structure: <code>/var/lib/qbittorrent/Downloads/</code>.</li>
               <li>File permissions: ensure ownership by the <code>qbittorrent</code> user (<code>chown -R qbittorrent:qbittorrent</code>) with <code>755</code>/<code>775</code> permissions (<code>chmod</code>).</li>
-              <li>Group assignment: add the <code>jellyfin</code> user to the <code>qbittorrent</code> group (<code>usermod -aG qbittorrent jellyfin</code>) so it can read media without permission conflicts.</li>
-              <li>Mapping in Jellyfin: point Jellyfin's libraries exactly at the download subfolders.</li>
+              <li>Group assignment: add the <code>jellyfin</code> user to the <code>qbittorrent</code> group (<code>usermod -aG qbittorrent jellyfin</code>) so it could read media without permission headaches.</li>
+              <li>Mapping in Jellyfin: point the libraries exactly at the download subfolders.</li>
             </ul>
           </section>
 
           <section class="article-section">
             <h2>
-              Acceso remoto seguro sin abrir puertos (solución a CG-NAT)
-              <span class="h2-en">Secure remote access without opening ports (working around CG-NAT)</span>
+              Acceso remoto sin abrir puertos (la CG-NAT del ISP)
+              <span class="h2-en">Remote access without opening ports (my ISP's CG-NAT)</span>
             </h2>
             <p>
-              Implementé Tailscale sobre Debian como red privada virtual (mesh VPN). Esto permite la
-              administración remota completa (SSH, WebUI de qBittorrent en el puerto 8080 y Jellyfin en el
-              puerto 8096) a través de la interfaz cifrada <code>tailscale0</code> (rango IP <code>100.X.X.X</code>).
+              Aquí me topé con el típico problema: mi proveedor de internet me da una IP detrás de CG-NAT,
+              así que abrir puertos en el router directamente no era una opción real. La solución que usé
+              fue Tailscale, montado sobre Debian como una red privada tipo mesh. Con eso tengo acceso
+              remoto completo (SSH, la WebUI de qBittorrent en el puerto 8080 y Jellyfin en el 8096) todo a
+              través de la interfaz cifrada <code>tailscale0</code>, con IPs del rango <code>100.X.X.X</code>.
             </p>
             <p>
-              De esta manera prescindo del reenvío de puertos (port forwarding) en el router, lo que mitiga
-              el riesgo de escaneo masivo sobre la IP pública.
+              Lo bueno de esto es que directamente me olvido del port forwarding en el router, así que
+              tampoco tengo mi IP pública expuesta a que cualquiera la escanee.
             </p>
             <p class="lede-en">
-              I set up Tailscale on top of Debian as a mesh VPN. This allows full remote administration
-              (SSH, qBittorrent's WebUI on port 8080, and Jellyfin on port 8096) through the encrypted
-              <code>tailscale0</code> interface (IP range <code>100.X.X.X</code>).
+              Here I ran into the classic problem: my ISP gives me an IP behind CG-NAT, so opening ports
+              directly on the router wasn't really an option. The solution I used was Tailscale, set up on
+              top of Debian as a mesh-style private network. With that I get full remote access (SSH,
+              qBittorrent's WebUI on port 8080, and Jellyfin on 8096), all through the encrypted
+              <code>tailscale0</code> interface, with IPs in the <code>100.X.X.X</code> range.
             </p>
             <p class="lede-en">
-              This way I avoid port forwarding on the router entirely, which mitigates the risk of mass
-              scanning against the public IP.
+              The good thing about this is that I skip port forwarding on the router entirely, so I also
+              don't have my public IP exposed for anyone to scan.
             </p>
           </section>
 
           <section class="article-section">
             <h2>
-              Mantenimiento y actualizaciones automáticas
-              <span class="h2-en">Maintenance and automatic updates</span>
+              Que se mantenga solo
+              <span class="h2-en">Making it maintain itself</span>
             </h2>
+            <p>
+              Y como no quiero estar pendiente de actualizar el servidor a mano cada dos por tres, dejé
+              esto montado para que se cuidase solo:
+            </p>
             <ul>
-              <li>Configuré <code>unattended-upgrades</code> y <code>apt-listchanges</code> para gestionar los parches de seguridad de Debian en segundo plano.</li>
-              <li>Habilité los <code>systemd timers</code> (<code>APT::Periodic::Unattended-Upgrade "1"</code>) con la propiedad <code>Persistent=true</code>, para garantizar que si el servidor está apagado en la hora programada, las actualizaciones pendientes se ejecuten automáticamente tras el siguiente arranque.</li>
-              <li>Configuré la limpieza automática de paquetes obsoletos (<code>Remove-Unused-Dependencies</code>).</li>
+              <li>Configuré <code>unattended-upgrades</code> y <code>apt-listchanges</code> para que los parches de seguridad de Debian se gestionen en segundo plano.</li>
+              <li>Habilité los <code>systemd timers</code> (<code>APT::Periodic::Unattended-Upgrade "1"</code>) con <code>Persistent=true</code>, para que si el servidor está apagado a la hora programada, las actualizaciones pendientes se apliquen solas en cuanto arranca de nuevo.</li>
+              <li>Configuré la limpieza automática de paquetes obsoletos (<code>Remove-Unused-Dependencies</code>), que si no vas revisando de vez en cuando se te va acumulando basura.</li>
             </ul>
+            <p class="lede-en">
+              And since I don't want to be keeping an eye on updating the server by hand every other day, I
+              set this up to look after itself:
+            </p>
             <ul class="lede-en">
-              <li>I configured <code>unattended-upgrades</code> and <code>apt-listchanges</code> to handle Debian's security patches in the background.</li>
-              <li>I enabled <code>systemd timers</code> (<code>APT::Periodic::Unattended-Upgrade "1"</code>) with <code>Persistent=true</code>, to guarantee that if the server is off at the scheduled time, pending updates run automatically after the next boot.</li>
-              <li>I set up automatic cleanup of obsolete packages (<code>Remove-Unused-Dependencies</code>).</li>
+              <li>I configured <code>unattended-upgrades</code> and <code>apt-listchanges</code> so Debian's security patches get handled in the background.</li>
+              <li>I enabled <code>systemd timers</code> (<code>APT::Periodic::Unattended-Upgrade "1"</code>) with <code>Persistent=true</code>, so that if the server is off at the scheduled time, pending updates get applied on their own the moment it boots up again.</li>
+              <li>I set up automatic cleanup of obsolete packages (<code>Remove-Unused-Dependencies</code>), since if you don't check on it once in a while, junk just piles up.</li>
             </ul>
           </section>
 
