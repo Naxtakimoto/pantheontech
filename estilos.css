@@ -397,3 +397,26 @@ body {
 @media (max-width: 520px) {
   .article-meta-line { letter-spacing: 0.03em; }
 }
+
+/* ---------- Aviso de autoría y licencia ---------- */
+
+.license-line {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  opacity: 0.75;
+  margin: 8px 0 0;
+  letter-spacing: 0.01em;
+}
+
+.license-line a {
+  color: var(--cyan);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--text-dim);
+}
+
+.license-line a:hover,
+.license-line a:focus-visible {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
