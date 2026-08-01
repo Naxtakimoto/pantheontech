@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pi-hole en mi servidor doméstico: cómo lo monté y los líos que tuve que arreglar ~ PantheonTech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../estilos.css">
+</head>
+<body>
+
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <div class="term-window">
+
+    <header class="term-bar">
+      <div class="term-dots">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+      </div>
+      <div class="term-title">pablo@pantheontech: ~/blog/pantheontech/post_5</div>
+      <div class="term-bar-spacer"></div>
+    </header>
+
+    <main class="term-body">
+
+      <a class="back-link" href="../../index.html">
+        <span class="arrow">←</span> volver al índice · back to index
+      </a>
+
+      <article>
+
+        <header class="article-header">
+          <p class="article-meta-line">
+            post_5.html <span class="sep">·</span> sysadmin, self-hosting, redes, docker <span class="sep">·</span> 05
+          </p>
+          <h1 class="article-title">
+            Pi-hole en mi servidor doméstico: cómo lo monté y los líos que tuve que arreglar
+            <span class="article-title-en">Pi-hole on my home server: how I set it up and the mess I had to fix</span>
+          </h1>
+        </header>
+
+        <div class="article-body">
+
+          <section class="article-section">
+            <h2>
+              Infraestructura base y servicios centrales
+              <span class="h2-en">Base infrastructure and core services</span>
+            </h2>
+            <p>
+              Todo sigue montado sobre Debian, con IP fija en la red local (<code>192.168.1.XXX</code>). Ahí
+              tengo corriendo Jellyfin (servidor de medios) y qBittorrent-nox (cliente de torrents con
+              WebUI), con la misma configuración de almacenamiento y permisos que ya conté en el post 2:
+            </p>
+            <ul>
+              <li>Directorio nativo de descargas: <code>/var/lib/qbittorrent/Downloads/</code>.</li>
+              <li>Permisos de archivos: propiedad de usuario <code>qbittorrent</code> (<code>chown -R qbittorrent:qbittorrent</code>) y permisos <code>755</code>/<code>775</code>.</li>
+              <li>Integración de grupos: usuario <code>jellyfin</code> añadido al grupo <code>qbittorrent</code> (<code>usermod -aG qbittorrent jellyfin</code>) para lectura directa sin conflictos de permisos.</li>
+            </ul>
+            <p class="lede-en">
+              Everything's still running on Debian, with a fixed IP on the local network
+              (<code>192.168.1.XXX</code>). On it I have Jellyfin (media server) and qBittorrent-nox
+              (torrent client with a WebUI) running, with the same storage and permissions setup I already
+              covered in post 2:
+            </p>
+            <ul class="lede-en">
+              <li>Native download directory: <code>/var/lib/qbittorrent/Downloads/</code>.</li>
+              <li>File permissions: ownership by the <code>qbittorrent</code> user (<code>chown -R qbittorrent:qbittorrent</code>) with <code>755</code>/<code>775</code> permissions.</li>
+              <li>Group integration: the <code>jellyfin</code> user added to the <code>qbittorrent</code> group (<code>usermod -aG qbittorrent jellyfin</code>) for direct reading without permission conflicts.</li>
+            </ul>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Aislar el servicio y filtrar DNS (Docker + Pi-hole)
+              <span class="h2-en">Isolating the service and filtering DNS (Docker + Pi-hole)</span>
+            </h2>
+            <p>
+              Desplegué Pi-hole con Docker Compose usando <code>network_mode: "host"</code>, para que
+              reconociera de forma individual las IPs de la red local. La configuración vive en
+              <code>/root/pihole/docker-compose.yml</code>.
+            </p>
+            <p>
+              Lo que dejé como válido en ese archivo, después de darle unas cuantas vueltas:
+            </p>
+            <ul>
+              <li>Variables de entorno modernas: <code>FTLCONF_LOCAL_IPV4: '192.168.1.XXX'</code> y <code>FTLCONF_webserver_api_password</code> para la contraseña de la WebUI.</li>
+              <li>DNS de respaldo (<code>127.0.0.1</code> y <code>1.1.1.1</code>) para garantizar resolución durante el arranque del contenedor.</li>
+              <li>Volúmenes persistentes en <code>./etc-pihole</code> y <code>./etc-dnsmasq.d</code>.</li>
+            </ul>
+            <p class="lede-en">
+              I deployed Pi-hole with Docker Compose using <code>network_mode: "host"</code>, so it would
+              recognize the local network's IPs individually. The config lives in
+              <code>/root/pihole/docker-compose.yml</code>.
+            </p>
+            <p class="lede-en">
+              What I settled on as valid in that file, after going back and forth a few times:
+            </p>
+            <ul class="lede-en">
+              <li>Modern environment variables: <code>FTLCONF_LOCAL_IPV4: '192.168.1.XXX'</code> and <code>FTLCONF_webserver_api_password</code> for the WebUI password.</li>
+              <li>Fallback DNS (<code>127.0.0.1</code> and <code>1.1.1.1</code>) to guarantee resolution while the container boots.</li>
+              <li>Persistent volumes at <code>./etc-pihole</code> and <code>./etc-dnsmasq.d</code>.</li>
+            </ul>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              El registro de incidencias
+              <span class="h2-en">The incident log</span>
+            </h2>
+            <p>
+              Como siempre digo, esto nunca sale a la primera. Voy a dejar aquí anotados los dos líos que
+              me dieron más guerra, porque seguro que a alguien más le pasa lo mismo.
+            </p>
+            <h3>Puerto 53 / systemd-resolved</h3>
+            <p>
+              La incidencia: al abrir <code>/etc/systemd/resolved.conf</code> con nano, el archivo
+              directamente no existía. Antes de dar nada por sentado comprobé si el puerto 53 estaba
+              ocupado:
+            </p>
+            <pre><code>ss -tulpn | grep :53</code></pre>
+            <p>
+              El diagnóstico fue que el puerto 53 estaba completamente libre por defecto en mi Debian base,
+              así que al final no hizo falta tocar nada de <code>systemd-resolved</code>. A veces el
+              problema no está donde uno piensa.
+            </p>
+            <h3>Estado "unhealthy" y fallo de autenticación en Pi-hole</h3>
+            <p>
+              La incidencia: el contenedor se quedaba en estado <code>unhealthy</code> y el panel web me
+              devolvía "Wrong password!" y "DNS Server failure detected".
+            </p>
+            <p>
+              La causa raíz, después de revisar línea por línea, eran dos cosas a la vez: tenía comentarios
+              (<code>#</code>) pegados en la misma línea que las variables de entorno y de DNS dentro del
+              <code>docker-compose.yml</code>, y encima estaba usando la variable heredada
+              <code>WEBPASSWORD</code> en lugar del estándar moderno de la API.
+            </p>
+            <p>
+              La solución fue limpiar el YAML entero quitando los comentarios en línea, pasar a
+              <code>FTLCONF_webserver_api_password</code>, y de paso cambiar la contraseña en caliente
+              directamente desde el contenedor:
+            </p>
+            <pre><code>docker exec -it pihole pihole -a -p 'TU_CONTRASEÑA'</code></pre>
+            <p class="lede-en">
+              As always, this never works on the first try. I'm leaving the two issues that gave me the
+              most trouble noted here, because I'm sure someone else will run into the same thing.
+            </p>
+            <p class="lede-en">
+              Port 53 / systemd-resolved: the issue was that opening <code>/etc/systemd/resolved.conf</code>
+              with nano, the file simply didn't exist. Before assuming anything I checked whether port 53 was
+              in use with the command above. The diagnosis was that port 53 was completely free by default on
+              my base Debian, so in the end there was nothing to touch in <code>systemd-resolved</code>.
+              Sometimes the problem isn't where you think it is.
+            </p>
+            <p class="lede-en">
+              "Unhealthy" status and authentication failure in Pi-hole: the container stayed in
+              <code>unhealthy</code> status and the web panel returned "Wrong password!" and "DNS Server
+              failure detected". The root cause, after going through it line by line, was two things at
+              once: I had comments (<code>#</code>) stuck on the same line as the environment and DNS
+              variables inside <code>docker-compose.yml</code>, and on top of that I was using the legacy
+              <code>WEBPASSWORD</code> variable instead of the modern API standard. The fix was cleaning up
+              the whole YAML file by removing the inline comments, switching to
+              <code>FTLCONF_webserver_api_password</code>, and changing the password on the fly directly from
+              the container with the command above.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Red privada remota y cortafuegos
+              <span class="h2-en">Remote private network and firewall</span>
+            </h2>
+            <p>
+              Sigo usando Tailscale (mesh VPN) sobre la interfaz <code>tailscale0</code> (rango
+              <code>100.X.X.X</code>) para tener acceso remoto cifrado sin depender de abrir puertos en el
+              router, esquivando la CG-NAT de mi ISP. Y el mantenimiento sigue automatizado con
+              <code>unattended-upgrades</code>, <code>apt-listchanges</code> y temporizadores de systemd
+              persistentes, tal y como conté en el post 2.
+            </p>
+            <p>
+              Lo que sí actualicé fue el cortafuegos de <code>nftables</code>, para dejar entrar
+              exactamente lo que necesita Pi-hole y nada más, con política de entrada <code>drop</code> por
+              defecto:
+            </p>
+            <pre><code>#!/usr/sbin/nft -f
+
+flush ruleset
+
+table inet filter {
+    chain input {
+        type filter hook input priority filter; policy drop;
+
+        # Tráfico de loopback
+        iif "lo" accept
+
+        # Conexiones ya establecidas o relacionadas
+        ct state established,related accept
+
+        # Acceso total sobre la interfaz de Tailscale
+        iifname "tailscale0" accept
+
+        # Tráfico desde la subred local de casa
+        ip saddr 192.168.1.0/24 accept
+
+        # Puertos específicos habilitados para la LAN
+        ip saddr 192.168.1.0/24 udp dport 53 accept   # DNS (Pi-hole)
+        ip saddr 192.168.1.0/24 tcp dport 53 accept   # DNS (Pi-hole)
+        ip saddr 192.168.1.0/24 tcp dport 80 accept   # WebUI Pi-hole
+        ip saddr 192.168.1.0/24 tcp dport 8080 accept # qBittorrent
+        ip saddr 192.168.1.0/24 tcp dport 8096 accept # Jellyfin
+    }
+
+    chain forward {
+        type filter hook forward priority filter; policy drop;
+    }
+
+    chain output {
+        type filter hook output priority filter; policy accept;
+    }
+}</code></pre>
+            <p class="lede-en">
+              I'm still using Tailscale (mesh VPN) over the <code>tailscale0</code> interface (range
+              <code>100.X.X.X</code>) for encrypted remote access without relying on opening ports on the
+              router, getting around my ISP's CG-NAT. And maintenance is still automated with
+              <code>unattended-upgrades</code>, <code>apt-listchanges</code>, and persistent systemd timers,
+              as I already covered in post 2.
+            </p>
+            <p class="lede-en">
+              What I did update was the <code>nftables</code> firewall, to let in exactly what Pi-hole needs
+              and nothing more, with a default-deny inbound policy, as shown above.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Cómo apuntar un dispositivo a Pi-hole
+              <span class="h2-en">How to point a device at Pi-hole</span>
+            </h2>
+            <p>
+              Estado: comprobado y operativo. El filtrado de anuncios y la resolución DNS funcionan
+              correctamente. Elegí configurarlo dispositivo a dispositivo en lugar de tocar el router
+              entero, así que estos son los pasos que sigo cada vez:
+            </p>
+            <ul>
+              <li><strong>Windows</strong>: Configuración de red → Editar asignación de servidor DNS → Manual (IPv4) → servidor DNS preferido: <code>192.168.1.XXX</code>.</li>
+              <li><strong>Android / iOS</strong>: Ajustes de Wi-Fi → ajustes IP de la red local → cambiar a IP estática → asignar como DNS 1 la dirección <code>192.168.1.XXX</code>.</li>
+              <li><strong>Verificación</strong>: entro en la interfaz de administración (<code>http://192.168.1.XXX/admin</code>) y compruebo que suben en tiempo real las métricas de "Queries Blocked".</li>
+            </ul>
+            <p class="lede-en">
+              Status: checked and operational. Ad filtering and DNS resolution work correctly. I chose to
+              configure it device by device instead of touching the whole router, so these are the steps I
+              follow every time:
+            </p>
+            <ul class="lede-en">
+              <li><strong>Windows</strong>: Network settings → Edit DNS server assignment → Manual (IPv4) → preferred DNS server: <code>192.168.1.XXX</code>.</li>
+              <li><strong>Android / iOS</strong>: Wi-Fi settings → local network IP settings → switch to static IP → set DNS 1 to <code>192.168.1.XXX</code>.</li>
+              <li><strong>Verification</strong>: I go into the admin interface (<code>http://192.168.1.XXX/admin</code>) and check that the "Queries Blocked" metric climbs in real time.</li>
+            </ul>
+          </section>
+
+        </div>
+
+      </article>
+
+      <footer class="term-footer">
+        <p class="prompt-line">
+          <span class="prompt-user">pablo@pantheontech</span><span class="prompt-sep">:</span><span class="prompt-path">~/blog/pantheontech</span><span class="prompt-dollar">$</span>
+          <span class="typed-cmd blink-cursor">_</span>
+        </p>
+        <p class="license-line">
+          © 2026 Pablo · PantheonTech — contenido bajo licencia
+          <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.es" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+
+</body>
+</html>
