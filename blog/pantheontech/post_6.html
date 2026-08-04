@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memoria: mi proyecto de Redes en 1º ASIR (Campus universitario con Packet Tracer) ~ PantheonTech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../estilos.css">
+</head>
+<body>
+
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <div class="term-window">
+
+    <header class="term-bar">
+      <div class="term-dots">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+      </div>
+      <div class="term-title">pablo@pantheontech: ~/blog/pantheontech/post_6</div>
+      <div class="term-bar-spacer"></div>
+    </header>
+
+    <main class="term-body">
+
+      <a class="back-link" href="../../index.html">
+        <span class="arrow">←</span> volver al índice · back to index
+      </a>
+
+      <article>
+
+        <header class="article-header">
+          <p class="article-meta-line">
+            post_6.html <span class="sep">·</span> asir, redes, academico <span class="sep">·</span> 06
+          </p>
+          <h1 class="article-title">
+            Memoria: mi proyecto de Redes en 1º ASIR (Campus universitario con Packet Tracer)
+            <span class="article-title-en">My Networking project from 1st year ASIR: a university campus in Packet Tracer</span>
+          </h1>
+        </header>
+
+        <div class="article-body">
+
+          <section class="article-section">
+            <h2>
+              Antes de nada
+              <span class="h2-en">Before we start</span>
+            </h2>
+            <p>
+              Este post es distinto a los demás. No es un proyecto casero, es la memoria de un proyecto
+              del módulo de Redes de Área Local, de mi primer curso de ASIR: diseñar e implementar desde
+              cero una red universitaria completa en Cisco Packet Tracer. Me apetecía dejarlo aquí entero,
+              tal cual lo entregué, porque es de los proyectos donde más se me juntó lo académico con
+              lo que luego uso en la práctica. Aviso: este post es más largo de lo normal, porque quiero
+              dejarlo completo, con sus tablas, sus capturas y su memoria tal cual.
+            </p>
+            <p class="lede-en">
+              This post is different from the others. It's not a home project, it's the report for my
+              Local Area Networks module, from my first year of ASIR: designing and implementing a full
+              university network from scratch in Cisco Packet Tracer. I wanted to leave it here in full,
+              exactly as I submitted it, because it's one of the projects where the academic side and what
+              I actually use later came together the most. Heads up: this post is longer than usual, because
+              I want to leave it complete, with its tables, its screenshots, and its report as it was.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              1. Introducción
+              <span class="h2-en">1. Introduction</span>
+            </h2>
+            <p>
+              El proyecto consiste en el diseño e implementación de una red universitaria denominada
+              "Campus ASIR", desarrollada mediante la herramienta de simulación Cisco Packet Tracer.
+            </p>
+            <p>
+              La red está compuesta por tres edificios interconectados: Facultad 1, Facultad 2 y el Centro
+              de Control. Cada edificio dispone de su propia infraestructura de red, formada por un router,
+              un switch y los equipos finales distribuidos en sus respectivas plantas.
+            </p>
+            <p>
+              Para el direccionamiento de la red se ha utilizado la técnica VLSM, que permite una
+              asignación eficiente de direcciones IP adaptada a las necesidades reales de cada subred. La
+              comunicación entre edificios se garantiza mediante enrutamiento estático configurado en cada
+              router.
+            </p>
+            <p>
+              Además, se ha implementado un servidor DHCP centralizado en el Centro de Control para la
+              asignación automática de direcciones IP, así como un servidor DNS y Web accesible desde
+              cualquier punto de la red mediante el dominio <code>www.informaticos.alajara.uni</code>.
+            </p>
+            <p class="lede-en">
+              The project consists of designing and implementing a university network called "Campus
+              ASIR", built using the Cisco Packet Tracer simulation tool. The network is made up of three
+              interconnected buildings: Facultad 1, Facultad 2, and the Centro de Control. Each building has
+              its own network infrastructure, made up of a router, a switch, and the end devices distributed
+              across its floors. Addressing was done using the VLSM technique, which allows efficient IP
+              allocation adapted to each subnet's real needs. Communication between buildings is guaranteed
+              through static routing configured on each router. A centralized DHCP server was also
+              implemented in the Centro de Control for automatic IP assignment, along with a DNS and Web
+              server accessible from anywhere on the network through the domain
+              <code>www.informaticos.alajara.uni</code>.
+            </p>
+
+            <figure class="post-figure">
+              <img src="assets/post_6/topologia-general.png" alt="Topología general de la red Campus ASIR en Cisco Packet Tracer, mostrando los tres edificios con sus plantas, routers, switches y equipos">
+              <figcaption>
+                Topología general de la red "Campus ASIR" en Packet Tracer: los tres edificios con sus plantas, routers, switches y equipos finales.
+                <span class="lede-en">Overall topology of the "Campus ASIR" network in Packet Tracer: the three buildings with their floors, routers, switches, and end devices.</span>
+              </figcaption>
+            </figure>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              2. Diseño físico de la red
+              <span class="h2-en">2. Physical network design</span>
+            </h2>
+            <p>
+              La red universitaria Campus ASIR está compuesta por tres edificios, cada uno con sus propias
+              plantas y equipos de red. Todos los edificios han sido diseñados siguiendo el mismo criterio:
+              un armario rack centralizado en la planta baja que concentra todo el cableado del edificio,
+              con un router y un switch que dan servicio a todas las plantas.
+            </p>
+            <p class="lede-en">
+              The Campus ASIR university network is made up of three buildings, each with its own floors
+              and network equipment. All the buildings were designed following the same criteria: a
+              centralized rack cabinet on the ground floor concentrating all the building's cabling, with a
+              router and a switch serving all floors.
+            </p>
+
+            <figure class="post-figure">
+              <img src="assets/post_6/mapa-edificios.png" alt="Mapa mostrando la ubicación de los tres edificios (Facultad 1, Centro de Control y Facultad 2) conectados entre sí">
+              <figcaption>
+                Disposición de los tres edificios sobre el plano: Facultad 1, Centro de Control y Facultad 2.
+                <span class="lede-en">Layout of the three buildings on the map: Facultad 1, Centro de Control, and Facultad 2.</span>
+              </figcaption>
+            </figure>
+
+            <h3>2.1. Edificio Facultad 1</h3>
+            <p>
+              El edificio de Facultad 1 cuenta con tres plantas distribuidas de la siguiente manera:
+            </p>
+            <ul>
+              <li>Planta Baja: armario rack con Router0 y Switch0, además de 3 equipos (PC1, PC2, PC3).</li>
+              <li>Planta Alta 1: 4 equipos (PC4, PC5, PC6, PC7).</li>
+              <li>Planta Alta 2: 3 equipos (PC8, PC9, PC10).</li>
+            </ul>
+            <p class="lede-en">
+              The Facultad 1 building has three floors distributed as follows: Ground floor: rack cabinet
+              with Router0 and Switch0, plus 3 devices (PC1, PC2, PC3). Floor 1: 4 devices (PC4, PC5, PC6,
+              PC7). Floor 2: 3 devices (PC8, PC9, PC10).
+            </p>
+
+            <figure class="post-figure">
+              <img src="assets/post_6/topologia-facultad1.png" alt="Diagrama de red del edificio Facultad 1 con sus tres plantas, Router0, Switch0 y los equipos PC1 a PC10">
+              <figcaption>
+                Diagrama de red de Facultad 1: las tres plantas conectadas a Switch0 y Router0.
+                <span class="lede-en">Facultad 1 network diagram: the three floors connected to Switch0 and Router0.</span>
+              </figcaption>
+            </figure>
+
+            <div class="figure-row">
+              <figure class="post-figure">
+                <img src="assets/post_6/render-facultad1.png" alt="Renderizado ilustrativo del edificio Facultad 1">
+                <figcaption>
+                  Recreación ilustrativa del edificio de Facultad 1.
+                  <span class="lede-en">Illustrative render of the Facultad 1 building.</span>
+                </figcaption>
+              </figure>
+              <figure class="post-figure">
+                <img src="assets/post_6/planta-baja-facultad1.png" alt="Plano de la planta baja de Facultad 1">
+                <figcaption>
+                  Plano de planta baja de Facultad 1.
+                  <span class="lede-en">Facultad 1 ground floor plan.</span>
+                </figcaption>
+              </figure>
+            </div>
+
+            <div class="figure-row">
+              <figure class="post-figure">
+                <img src="assets/post_6/planta-primera-facultad1.png" alt="Plano de la planta primera de Facultad 1 con la ubicación de PC4, PC5, PC6, PC7">
+                <figcaption>
+                  Planta primera de Facultad 1, con PC4 a PC7 marcados.
+                  <span class="lede-en">Facultad 1 first floor, with PC4 through PC7 marked.</span>
+                </figcaption>
+              </figure>
+              <figure class="post-figure">
+                <img src="assets/post_6/planta-segunda-facultad1.png" alt="Plano de la planta segunda de Facultad 1 con la ubicación de PC8, PC9, PC10">
+                <figcaption>
+                  Planta segunda de Facultad 1, con PC8 a PC10 marcados.
+                  <span class="lede-en">Facultad 1 second floor, with PC8 through PC10 marked.</span>
+                </figcaption>
+              </figure>
+            </div>
+
+            <h3>2.2. Edificio Facultad 2</h3>
+            <p>
+              El edificio de Facultad 2 cuenta con tres plantas distribuidas de la siguiente manera:
+            </p>
+            <ul>
+              <li>Planta Baja: armario rack con Router2 y Switch2, además de 2 equipos (PC19, PC20).</li>
+              <li>Planta Alta 1: 3 equipos (PC21, PC22, PC23).</li>
+              <li>Planta Alta 2: 2 equipos (PC24, PC25).</li>
+            </ul>
+            <p class="lede-en">
+              The Facultad 2 building has three floors distributed as follows: Ground floor: rack cabinet
+              with Router2 and Switch2, plus 2 devices (PC19, PC20). Floor 1: 3 devices (PC21, PC22, PC23).
+              Floor 2: 2 devices (PC24, PC25).
+            </p>
+
+            <figure class="post-figure">
+              <img src="assets/post_6/topologia-facultad2.png" alt="Diagrama de red del edificio Facultad 2 con sus tres plantas, Router2, Switch2 y los equipos PC19 a PC25">
+              <figcaption>
+                Diagrama de red de Facultad 2: las tres plantas conectadas a Switch2 y Router2.
+                <span class="lede-en">Facultad 2 network diagram: the three floors connected to Switch2 and Router2.</span>
+              </figcaption>
+            </figure>
+
+            <div class="figure-row">
+              <figure class="post-figure">
+                <img src="assets/post_6/render-facultad2.png" alt="Renderizado ilustrativo del edificio Facultad 2 (Facultad de Ciencias)">
+                <figcaption>
+                  Recreación ilustrativa del edificio de Facultad 2.
+                  <span class="lede-en">Illustrative render of the Facultad 2 building.</span>
+                </figcaption>
+              </figure>
+              <figure class="post-figure">
+                <img src="assets/post_6/planta1-facultad2.png" alt="Plano de planta de Facultad 2, planta baja, con PC19 y PC20">
+                <figcaption>
+                  Planta baja de Facultad 2, con PC19 y PC20 marcados.
+                  <span class="lede-en">Facultad 2 ground floor, with PC19 and PC20 marked.</span>
+                </figcaption>
+              </figure>
+            </div>
+
+            <div class="figure-row">
+              <figure class="post-figure">
+                <img src="assets/post_6/planta2-facultad2.png" alt="Plano de planta de Facultad 2, planta alta 1, con PC21, PC22, PC23">
+                <figcaption>
+                  Planta alta 1 de Facultad 2, con PC21 a PC23 marcados.
+                  <span class="lede-en">Facultad 2 floor 1, with PC21 through PC23 marked.</span>
+                </figcaption>
+              </figure>
+              <figure class="post-figure">
+                <img src="assets/post_6/planta3-facultad2.png" alt="Plano de planta de Facultad 2, planta alta 2, con PC24 y PC25">
+                <figcaption>
+                  Planta alta 2 de Facultad 2, con PC24 y PC25 marcados.
+                  <span class="lede-en">Facultad 2 floor 2, with PC24 and PC25 marked.</span>
+                </figcaption>
+              </figure>
+            </div>
+
+            <h3>2.3. Centro de Control</h3>
+            <p>
+              El Centro de Control es el edificio principal de la red universitaria y cuenta con dos
+              plantas:
+            </p>
+            <ul>
+              <li>Planta Baja: armario rack con Router1 y Switch1, además de 3 equipos (PC0, PC17, PC18) y el servidor DHCP y DNS/Web.</li>
+              <li>Planta Alta: 5 equipos (PC12, PC13, PC14, PC15, PC16).</li>
+            </ul>
+            <p class="lede-en">
+              The Centro de Control is the main building of the university network and has two floors:
+              Ground floor: rack cabinet with Router1 and Switch1, plus 3 devices (PC0, PC17, PC18) and the
+              DHCP and DNS/Web server. Upper floor: 5 devices (PC12, PC13, PC14, PC15, PC16).
+            </p>
+
+            <figure class="post-figure">
+              <img src="assets/post_6/topologia-centrocontrol.png" alt="Diagrama de red del Centro de Control con sus dos plantas, Router1, Switch1, los servidores DHCP y DNS/Web, y los equipos PC0, PC12 a PC18">
+              <figcaption>
+                Diagrama de red del Centro de Control: las dos plantas, Switch1, Router1 y los servidores centralizados.
+                <span class="lede-en">Centro de Control network diagram: the two floors, Switch1, Router1, and the centralized servers.</span>
+              </figcaption>
+            </figure>
+
+            <div class="figure-row">
+              <figure class="post-figure">
+                <img src="assets/post_6/render-centrocontrol.png" alt="Renderizado ilustrativo del edificio Centro de Control (Facultad de Historia)">
+                <figcaption>
+                  Recreación ilustrativa del edificio del Centro de Control.
+                  <span class="lede-en">Illustrative render of the Centro de Control building.</span>
+                </figcaption>
+              </figure>
+              <figure class="post-figure">
+                <img src="assets/post_6/planta-baja-centrocontrol.png" alt="Plano de planta baja del Centro de Control">
+                <figcaption>
+                  Planta baja del Centro de Control, con la sala de control central.
+                  <span class="lede-en">Centro de Control ground floor, with the central control room.</span>
+                </figcaption>
+              </figure>
+            </div>
+
+            <figure class="post-figure">
+              <img src="assets/post_6/planta-alta-centrocontrol.png" alt="Plano de planta alta del Centro de Control, con la ubicación de los servidores DHCP y DNS/Web y los equipos PC12 a PC16">
+              <figcaption>
+                Planta alta del Centro de Control, con los servidores DHCP y DNS/Web y PC12 a PC16 marcados.
+                <span class="lede-en">Centro de Control upper floor, with the DHCP and DNS/Web servers and PC12 through PC16 marked.</span>
+              </figcaption>
+            </figure>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              3. Justificación de hardware
+              <span class="h2-en">3. Hardware justification</span>
+            </h2>
+
+            <h3>3.1. Elección de routers</h3>
+            <p>
+              Para la interconexión de los tres edificios se han utilizado routers modelo Cisco ISR4331.
+              Este modelo ha sido elegido por las siguientes razones:
+            </p>
+            <ul>
+              <li>Dispone de múltiples interfaces GigabitEthernet para la conexión con la red local de cada edificio.</li>
+              <li>Permite la instalación de módulos serie para la interconexión WAN entre edificios.</li>
+              <li>Soporta todas las funcionalidades necesarias para el proyecto: enrutamiento estático, DHCP con IP Helper y listas de acceso.</li>
+              <li>Es un modelo ampliamente utilizado en entornos empresariales y educativos.</li>
+            </ul>
+
+            <h3>3.2. Elección de switches</h3>
+            <p>
+              Para la interconexión de los equipos dentro de cada edificio se han utilizado switches
+              modelo Cisco 2960-24TT. Este modelo ha sido elegido por las siguientes razones:
+            </p>
+            <ul>
+              <li>Dispone de 24 puertos FastEthernet para la conexión de los equipos finales.</li>
+              <li>Cuenta con 2 puertos GigabitEthernet para la conexión con el router del edificio.</li>
+              <li>Es un modelo sencillo y suficiente para las necesidades de cada edificio.</li>
+            </ul>
+
+            <h3>3.3. Centro de Control: justificación de equipos</h3>
+            <p>
+              El Centro de Control dispone de equipos de trabajo en su planta baja junto al rack
+              principal. Esta decisión se ha tomado por los siguientes motivos:
+            </p>
+            <ul>
+              <li>La planta baja del Centro de Control alberga los servidores DHCP y DNS/Web, que requieren supervisión y administración local.</li>
+              <li>Disponer de equipos de trabajo en esta planta permite a los administradores de red monitorizar y gestionar la infraestructura de forma directa.</li>
+              <li>Es una práctica habitual en entornos reales contar con puestos de administración local en la misma planta que los equipos de comunicaciones.</li>
+            </ul>
+
+            <p class="lede-en">
+              Hardware justification: ISR4331 routers were chosen for the interconnection between
+              buildings for their multiple GigabitEthernet interfaces, support for serial WAN modules, and
+              full support for static routing, DHCP with IP Helper, and access lists. 2960-24TT switches
+              were chosen for connecting end devices within each building, with 24 FastEthernet ports plus 2
+              GigabitEthernet uplinks. The Centro de Control keeps admin workstations on its ground floor,
+              next to the DHCP and DNS/Web servers, since it's standard practice to have local admin
+              stations on the same floor as the communications equipment.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              4. Direccionamiento IP — VLSM
+              <span class="h2-en">4. IP addressing — VLSM</span>
+            </h2>
+
+            <h3>4.1. Tabla de subredes</h3>
+            <p>
+              Para el direccionamiento de la red se ha utilizado la técnica VLSM partiendo de la red base
+              <code>192.168.0.0/24</code>. Esta técnica permite dividir una red en subredes de diferente
+              tamaño adaptadas a las necesidades reales de cada edificio, optimizando así el uso del
+              espacio de direccionamiento. Las subredes se han calculado ordenando de mayor a menor número
+              de hosts necesarios:
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Subred</th>
+                  <th>Red</th>
+                  <th>Máscara</th>
+                  <th>Hosts útiles</th>
+                  <th>Rango usable</th>
+                  <th>Broadcast</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Facultad 1</td><td>192.168.0.0/28</td><td>255.255.255.240</td><td>14</td><td>192.168.0.1 – 192.168.0.14</td><td>192.168.0.15</td></tr>
+                <tr><td>Centro de Control</td><td>192.168.0.16/28</td><td>255.255.255.240</td><td>14</td><td>192.168.0.17 – 192.168.0.30</td><td>192.168.0.31</td></tr>
+                <tr><td>Facultad 2</td><td>192.168.0.32/28</td><td>255.255.255.240</td><td>14</td><td>192.168.0.33 – 192.168.0.46</td><td>192.168.0.47</td></tr>
+                <tr><td>Enlace R0-R1</td><td>192.168.0.48/30</td><td>255.255.255.252</td><td>2</td><td>192.168.0.49 – 192.168.0.50</td><td>192.168.0.51</td></tr>
+                <tr><td>Enlace R1-R2</td><td>192.168.0.52/30</td><td>255.255.255.252</td><td>2</td><td>192.168.0.53 – 192.168.0.54</td><td>192.168.0.55</td></tr>
+              </tbody>
+            </table>
+
+            <h3>4.2. Tabla de asignación de IPs</h3>
+            <table>
+              <thead>
+                <tr><th>Dispositivo</th><th>IP</th><th>Máscara</th><th>Gateway</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Router0 (LAN)</td><td>192.168.0.1</td><td>255.255.255.240</td><td>—</td></tr>
+                <tr><td>Router0 (R0-R1)</td><td>192.168.0.49</td><td>255.255.255.252</td><td>—</td></tr>
+                <tr><td>PC1</td><td>192.168.0.2</td><td>255.255.255.240</td><td>192.168.0.1</td></tr>
+                <tr><td>PC2</td><td>192.168.0.3</td><td>255.255.255.240</td><td>192.168.0.1</td></tr>
+                <tr><td>PC3</td><td>192.168.0.4</td><td>255.255.255.240</td><td>192.168.0.1</td></tr>
+                <tr><td>PC4</td><td>192.168.0.5</td><td>255.255.255.240</td><td>192.168.0.1</td></tr>
+                <tr><td>PC5</td><td>192.168.0.6</td><td>255.255.255.240</td><td>192.168.0.1</td></tr>
+                <tr><td>PC6</td><td>192.168.0.7</td><td>255.255.255.240</td><td>192.168.0.1</td></tr>
+                <tr><td>PC7</td><td>192.168.0.8</td><td>255.255.255.240</td><td>192.168.0.1</td></tr>
+                <tr><td>PC8</td><td>192.168.0.9</td><td>255.255.255.240</td><td>192.168.0.1</td></tr>
+                <tr><td>PC9</td><td>192.168.0.10</td><td>255.255.255.240</td><td>192.168.0.1</td></tr>
+                <tr><td>PC10</td><td>192.168.0.11</td><td>255.255.255.240</td><td>192.168.0.1</td></tr>
+                <tr><td>Router1 (LAN)</td><td>192.168.0.17</td><td>255.255.255.240</td><td>—</td></tr>
+                <tr><td>Router1 (R0-R1)</td><td>192.168.0.50</td><td>255.255.255.252</td><td>—</td></tr>
+                <tr><td>Router1 (R1-R2)</td><td>192.168.0.53</td><td>255.255.255.252</td><td>—</td></tr>
+                <tr><td>PC0</td><td>192.168.0.18</td><td>255.255.255.240</td><td>192.168.0.17</td></tr>
+                <tr><td>PC17</td><td>192.168.0.19</td><td>255.255.255.240</td><td>192.168.0.17</td></tr>
+                <tr><td>PC18</td><td>192.168.0.20</td><td>255.255.255.240</td><td>192.168.0.17</td></tr>
+                <tr><td>PC12</td><td>192.168.0.21</td><td>255.255.255.240</td><td>192.168.0.17</td></tr>
+                <tr><td>PC13</td><td>192.168.0.22</td><td>255.255.255.240</td><td>192.168.0.17</td></tr>
+                <tr><td>PC14</td><td>192.168.0.23</td><td>255.255.255.240</td><td>192.168.0.17</td></tr>
+                <tr><td>PC15</td><td>192.168.0.24</td><td>255.255.255.240</td><td>192.168.0.17</td></tr>
+                <tr><td>PC16</td><td>192.168.0.25</td><td>255.255.255.240</td><td>192.168.0.17</td></tr>
+                <tr><td>Servidor DHCP</td><td>192.168.0.26</td><td>255.255.255.240</td><td>192.168.0.17</td></tr>
+                <tr><td>Servidor DNS/Web</td><td>192.168.0.27</td><td>255.255.255.240</td><td>192.168.0.17</td></tr>
+                <tr><td>Router2 (LAN)</td><td>192.168.0.33</td><td>255.255.255.240</td><td>—</td></tr>
+                <tr><td>Router2 (R1-R2)</td><td>192.168.0.54</td><td>255.255.255.252</td><td>—</td></tr>
+                <tr><td>PC19</td><td>192.168.0.34</td><td>255.255.255.240</td><td>192.168.0.33</td></tr>
+                <tr><td>PC20</td><td>192.168.0.35</td><td>255.255.255.240</td><td>192.168.0.33</td></tr>
+                <tr><td>PC21</td><td>192.168.0.36</td><td>255.255.255.240</td><td>192.168.0.33</td></tr>
+                <tr><td>PC22</td><td>192.168.0.37</td><td>255.255.255.240</td><td>192.168.0.33</td></tr>
+                <tr><td>PC23</td><td>192.168.0.38</td><td>255.255.255.240</td><td>192.168.0.33</td></tr>
+                <tr><td>PC24</td><td>192.168.0.39</td><td>255.255.255.240</td><td>192.168.0.33</td></tr>
+                <tr><td>PC25</td><td>192.168.0.40</td><td>255.255.255.240</td><td>192.168.0.33</td></tr>
+              </tbody>
+            </table>
+            <p class="lede-en">
+              IP addressing was done with VLSM starting from the base network <code>192.168.0.0/24</code>,
+              sized from largest to smallest subnet: 14 usable hosts each for Facultad 1, Centro de Control,
+              and Facultad 2, plus two /30 point-to-point links between routers. The full device-by-device
+              IP assignment table is above, in Spanish only since it's addressing data rather than prose.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              5. Configuración lógica
+              <span class="h2-en">5. Logical configuration</span>
+            </h2>
+
+            <h3>5.1. Tablas de enrutamiento estático</h3>
+            <p>
+              Para garantizar la comunicación entre todos los edificios se ha configurado enrutamiento
+              estático en los tres routers:
+            </p>
+
+            <p><strong>Router0 (Facultad 1):</strong></p>
+            <table>
+              <thead><tr><th>Red destino</th><th>Máscara</th><th>Siguiente salto</th></tr></thead>
+              <tbody>
+                <tr><td>192.168.0.16/28</td><td>255.255.255.240</td><td>192.168.0.50</td></tr>
+                <tr><td>192.168.0.32/28</td><td>255.255.255.240</td><td>192.168.0.50</td></tr>
+                <tr><td>192.168.0.52/30</td><td>255.255.255.252</td><td>192.168.0.50</td></tr>
+              </tbody>
+            </table>
+
+            <p><strong>Router1 (Centro de Control):</strong></p>
+            <table>
+              <thead><tr><th>Red destino</th><th>Máscara</th><th>Siguiente salto</th></tr></thead>
+              <tbody>
+                <tr><td>192.168.0.0/28</td><td>255.255.255.240</td><td>192.168.0.49</td></tr>
+                <tr><td>192.168.0.32/28</td><td>255.255.255.240</td><td>192.168.0.54</td></tr>
+              </tbody>
+            </table>
+
+            <p><strong>Router2 (Facultad 2):</strong></p>
+            <table>
+              <thead><tr><th>Red destino</th><th>Máscara</th><th>Siguiente salto</th></tr></thead>
+              <tbody>
+                <tr><td>192.168.0.0/28</td><td>255.255.255.240</td><td>192.168.0.53</td></tr>
+                <tr><td>192.168.0.16/28</td><td>255.255.255.240</td><td>192.168.0.53</td></tr>
+                <tr><td>192.168.0.48/30</td><td>255.255.255.252</td><td>192.168.0.53</td></tr>
+              </tbody>
+            </table>
+
+            <h3>5.2. Configuración DHCP</h3>
+            <p>
+              Para la asignación automática de direcciones IP se ha configurado un servidor DHCP
+              centralizado en el Centro de Control con la dirección IP <code>192.168.0.26</code>. Este
+              servidor gestiona tres pools de direcciones, uno por cada edificio.
+            </p>
+            <p>
+              Para que las peticiones DHCP de Facultad 1 y Facultad 2 lleguen al servidor centralizado, se
+              ha configurado el comando <code>ip helper-address</code> en Router0 y Router2 apuntando a
+              <code>192.168.0.26</code>.
+            </p>
+            <p>
+              Los equipos del Centro de Control tienen IP estática asignada debido a que se trata de
+              equipos de administración y servidores, para los cuales es una buena práctica mantener una
+              dirección fija y conocida en todo momento.
+            </p>
+            <p class="lede-en">
+              Static routing was configured on all three routers so every building can reach the other two.
+              A centralized DHCP server on the Centro de Control (<code>192.168.0.26</code>) manages three
+              address pools, one per building, using <code>ip helper-address</code> on Router0 and Router2
+              so DHCP requests from Facultad 1 and Facultad 2 reach the centralized server. Centro de
+              Control devices keep static IPs since they're admin and server equipment, where a fixed,
+              known address is good practice.
+            </p>
+
+            <div class="figure-row">
+              <figure class="post-figure">
+                <img src="assets/post_6/dhcp-centrocontrol.png" alt="Configuración del pool DHCP CentroControl en el servidor DHCP">
+                <figcaption>
+                  Pool DHCP "CentroControl" en el servidor.
+                  <span class="lede-en">"CentroControl" DHCP pool on the server.</span>
+                </figcaption>
+              </figure>
+              <figure class="post-figure">
+                <img src="assets/post_6/dhcp-facultad1.png" alt="Configuración del pool DHCP Facultad1 en el servidor DHCP">
+                <figcaption>
+                  Pool DHCP "Facultad1" en el servidor.
+                  <span class="lede-en">"Facultad1" DHCP pool on the server.</span>
+                </figcaption>
+              </figure>
+            </div>
+
+            <div class="figure-row">
+              <figure class="post-figure">
+                <img src="assets/post_6/dhcp-facultad2.png" alt="Configuración del pool DHCP Facultad2 en el servidor DHCP">
+                <figcaption>
+                  Pool DHCP "Facultad2" en el servidor.
+                  <span class="lede-en">"Facultad2" DHCP pool on the server.</span>
+                </figcaption>
+              </figure>
+              <figure class="post-figure">
+                <img src="assets/post_6/pc1-ip-config.png" alt="Configuración IP de PC1 mostrando que ha recibido dirección por DHCP correctamente">
+                <figcaption>
+                  PC1 con IP asignada por DHCP correctamente.
+                  <span class="lede-en">PC1 with an IP correctly assigned via DHCP.</span>
+                </figcaption>
+              </figure>
+            </div>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              6. Verificación de conectividad
+              <span class="h2-en">6. Connectivity verification</span>
+            </h2>
+
+            <h3>6.1. Capturas de show ip route</h3>
+            <p>
+              A continuación se muestran las tablas de enrutamiento de cada router obtenidas mediante el
+              comando <code>show ip route</code>, donde se puede verificar que todas las rutas están
+              correctamente configuradas.
+            </p>
+            <p class="lede-en">
+              Below are each router's routing tables obtained with <code>show ip route</code>, verifying
+              that all routes are correctly configured.
+            </p>
+
+            <figure class="post-figure">
+              <img src="assets/post_6/cli-router0.png" alt="Salida del comando show ip route en Router0">
+              <figcaption>
+                Router0 — <code>show ip route</code>.
+                <span class="lede-en">Router0 — <code>show ip route</code>.</span>
+              </figcaption>
+            </figure>
+            <div class="figure-row">
+              <figure class="post-figure">
+                <img src="assets/post_6/cli-router1.png" alt="Salida del comando show ip route en Router1">
+                <figcaption>
+                  Router1 — <code>show ip route</code>.
+                  <span class="lede-en">Router1 — <code>show ip route</code>.</span>
+                </figcaption>
+              </figure>
+              <figure class="post-figure">
+                <img src="assets/post_6/cli-router2.png" alt="Salida del comando show ip route en Router2">
+                <figcaption>
+                  Router2 — <code>show ip route</code>.
+                  <span class="lede-en">Router2 — <code>show ip route</code>.</span>
+                </figcaption>
+              </figure>
+            </div>
+
+            <h3>6.2. Capturas de pings exitosos</h3>
+            <p>
+              Para verificar la conectividad entre los tres edificios se han realizado pings entre equipos
+              de distintas subredes:
+            </p>
+            <ul>
+              <li>Ping desde PC1 (Facultad 1) hasta PC13 (Centro de Control).</li>
+              <li>Ping desde PC1 (Facultad 1) hasta PC19 (Facultad 2).</li>
+              <li>Ping desde PC13 (Centro de Control) hasta PC19 (Facultad 2).</li>
+            </ul>
+            <p class="lede-en">
+              To verify connectivity between the three buildings, pings were run between devices on
+              different subnets: PC1 (Facultad 1) to PC13 (Centro de Control), PC1 (Facultad 1) to PC19
+              (Facultad 2), and PC13 (Centro de Control) to PC19 (Facultad 2).
+            </p>
+
+            <div class="figure-row">
+              <figure class="post-figure">
+                <img src="assets/post_6/ping-pc1-pc13.png" alt="Ping exitoso desde PC1 hasta PC13">
+                <figcaption>
+                  Ping desde PC1 hasta PC13.
+                  <span class="lede-en">Ping from PC1 to PC13.</span>
+                </figcaption>
+              </figure>
+              <figure class="post-figure">
+                <img src="assets/post_6/ping-pc1-pc19.png" alt="Ping exitoso desde PC1 hasta PC19">
+                <figcaption>
+                  Ping desde PC1 hasta PC19.
+                  <span class="lede-en">Ping from PC1 to PC19.</span>
+                </figcaption>
+              </figure>
+            </div>
+
+            <figure class="post-figure">
+              <img src="assets/post_6/ping-pc13-pc19.png" alt="Ping exitoso desde PC13 hasta PC19">
+              <figcaption>
+                Ping desde PC13 hasta PC19.
+                <span class="lede-en">Ping from PC13 to PC19.</span>
+              </figcaption>
+            </figure>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              7. Servidor DNS y Web
+              <span class="h2-en">7. DNS and Web server</span>
+            </h2>
+            <p>
+              Como punto extra del proyecto se ha implementado un servidor DNS y Web en el Centro de
+              Control con la dirección IP <code>192.168.0.27</code>.
+            </p>
+            <p><strong>Servidor DNS:</strong></p>
+            <p>
+              El servidor DNS se ha configurado con el dominio <code>www.informaticos.alajara.uni</code>,
+              que resuelve a la dirección IP <code>192.168.0.27</code> del propio servidor. Esto permite que
+              cualquier equipo de la red universitaria pueda acceder a la página web mediante el nombre de
+              dominio en lugar de la dirección IP.
+            </p>
+            <p>
+              Para que los equipos de Facultad 1 y Facultad 2 puedan resolver el dominio, el servidor DHCP
+              reparte automáticamente la dirección del servidor DNS <code>192.168.0.27</code> a todos los
+              equipos de la red.
+            </p>
+            <p><strong>Servidor Web:</strong></p>
+            <p>
+              El servidor Web aloja una página HTML accesible desde cualquier punto de la red mediante el
+              navegador web de Packet Tracer introduciendo la URL
+              <code>http://www.informaticos.alajara.uni</code>.
+            </p>
+            <p class="lede-en">
+              As an extra part of the project, a DNS and Web server was implemented on the Centro de
+              Control at <code>192.168.0.27</code>, resolving the domain
+              <code>www.informaticos.alajara.uni</code>. The DHCP server automatically hands out that DNS
+              address to every device on the network, and the Web server hosts an HTML page reachable from
+              anywhere on the network through that domain.
+            </p>
+
+            <figure class="post-figure">
+              <img src="assets/post_6/pc19-ip-config.png" alt="Configuración IP de PC19 mostrando la dirección DNS asignada por DHCP">
+              <figcaption>
+                PC19 con el servidor DNS (192.168.0.27) asignado automáticamente por DHCP.
+                <span class="lede-en">PC19 with the DNS server (192.168.0.27) automatically assigned via DHCP.</span>
+              </figcaption>
+            </figure>
+
+            <div class="figure-row">
+              <figure class="post-figure">
+                <img src="assets/post_6/web-pc10.png" alt="Página web accedida desde PC10 mediante el dominio www.informaticos.alajara.uni">
+                <figcaption>
+                  Acceso a la web desde PC10 (Facultad 1).
+                  <span class="lede-en">Accessing the site from PC10 (Facultad 1).</span>
+                </figcaption>
+              </figure>
+              <figure class="post-figure">
+                <img src="assets/post_6/web-pc0.png" alt="Página web accedida desde PC0 mediante el dominio www.informaticos.alajara.uni">
+                <figcaption>
+                  Acceso a la web desde PC0 (Centro de Control).
+                  <span class="lede-en">Accessing the site from PC0 (Centro de Control).</span>
+                </figcaption>
+              </figure>
+            </div>
+
+            <figure class="post-figure">
+              <img src="assets/post_6/web-pc22.png" alt="Página web accedida desde PC22 mediante el dominio www.informaticos.alajara.uni">
+              <figcaption>
+                Acceso a la web desde PC22 (Facultad 2): la red funciona desde los tres edificios.
+                <span class="lede-en">Accessing the site from PC22 (Facultad 2): the network works from all three buildings.</span>
+              </figcaption>
+            </figure>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              8. Conclusión
+              <span class="h2-en">8. Conclusion</span>
+            </h2>
+            <p>
+              El presente proyecto ha permitido diseñar e implementar una red universitaria completa y
+              funcional, abarcando desde el diseño físico de los edificios hasta la configuración lógica de
+              los servicios de red.
+            </p>
+            <p>
+              Se ha conseguido una infraestructura de red que cumple con todos los requisitos establecidos
+              en el enunciado:
+            </p>
+            <ul>
+              <li>Tres edificios interconectados con su correspondiente infraestructura física y lógica.</li>
+              <li>Direccionamiento eficiente mediante la técnica VLSM, optimizando el uso del espacio de direccionamiento disponible.</li>
+              <li>Comunicación total entre todos los equipos de la red gracias al enrutamiento estático configurado en los tres routers.</li>
+              <li>Asignación automática de direcciones IP mediante un servidor DHCP centralizado en el Centro de Control.</li>
+              <li>Servidor DNS y Web funcional accesible desde cualquier punto de la red mediante el dominio www.informaticos.alajara.uni.</li>
+            </ul>
+            <p>
+              Durante el desarrollo del proyecto se han aplicado conocimientos de direccionamiento IP,
+              subnetting, enrutamiento estático y configuración de servicios de red, consolidando los
+              conocimientos adquiridos a lo largo del módulo de Redes de Área Local.
+            </p>
+            <p class="lede-en">
+              This project made it possible to design and implement a complete, working university
+              network, covering everything from the physical design of the buildings to the logical
+              configuration of the network services. The resulting infrastructure meets every requirement
+              from the assignment: three interconnected buildings with full physical and logical
+              infrastructure, efficient VLSM addressing, full communication between all devices through
+              static routing on the three routers, automatic IP assignment via a centralized DHCP server,
+              and a working DNS and Web server reachable from anywhere on the network. Throughout the
+              project I applied IP addressing, subnetting, static routing, and network service configuration
+              knowledge, consolidating what I learned over the Local Area Networks module.
+            </p>
+          </section>
+
+          <section class="article-section experience-box">
+            <h2>
+              Lo que esto no cuenta: mi experiencia real en la empresa
+              <span class="h2-en">What this doesn't cover: my real experience at the company</span>
+            </h2>
+            <p>
+              Todo lo anterior es la memoria tal cual la entregué para el módulo, un entorno simulado en
+              Packet Tracer. Pero quiero añadir algo que no está reflejado en este proyecto y que sí forma
+              parte de mi experiencia real: las prácticas que hice en una empresa, en un entorno de trabajo
+              de verdad, no en un simulador.
+            </p>
+            <p>
+              Una de las cosas que en este proyecto de clase no se ve por ningún lado es la segmentación
+              por VLAN. Aquí toda la red va plana por edificio y planta, sin aislar tráfico dentro de cada
+              LAN. En la empresa sí que trabajé con administración de VLAN de forma real, sobre
+              infraestructura física, no sobre una simulación. Con los conocimientos que tengo ahora, esta
+              misma red de Campus ASIR se podría haber diseñado también con VLANs por planta o por tipo de
+              equipo (puestos de administración, servidores, equipos de aulas), y es algo que me planteo
+              para una futura revisión del proyecto.
+            </p>
+            <p>
+              Además, durante esas prácticas participé en la creación desde cero de una red real de
+              edificios de la empresa, incluyendo la implementación de VLAN internas para segmentar el
+              tráfico entre departamentos y plantas. No fue un ejercicio de clase: fue documentar
+              necesidades reales, cablear, configurar switches gestionables y verificar que cada VLAN veía
+              exactamente lo que tenía que ver y nada más.
+            </p>
+            <p>
+              Por otro lado, también administré bases de datos alojadas en sistemas virtualizados y en
+              distintos servidores de la empresa, lo que incluyó su administración dentro de la propia red
+              corporativa: permisos de acceso, ubicación de los servidores en la topología interna, y
+              cómo se comunicaban esos servicios con el resto de la infraestructura.
+            </p>
+            <p>
+              Lo dejo aquí como anécdota, pero también como algo que me parece relevante: un proyecto
+              académico como este sienta las bases (VLSM, enrutamiento, DHCP, DNS), pero es en un entorno de
+              trabajo real donde esas bases se ponen a prueba con matices que en clase no siempre se ven,
+              como las VLAN o la gestión de bases de datos en producción.
+            </p>
+            <p class="lede-en">
+              Everything above is the report exactly as I submitted it, a simulated environment in Packet
+              Tracer. But I want to add something that isn't reflected in this project and that is part of
+              my real experience: the internship I did at a company, in an actual work environment, not a
+              simulator.
+            </p>
+            <p class="lede-en">
+              One thing that's nowhere to be seen in this class project is VLAN segmentation — here the
+              whole network is flat per building and floor, with no traffic isolation within each LAN. At
+              the company I did work with real VLAN administration, on physical infrastructure, not a
+              simulation. With what I know now, this same Campus ASIR network could also have been designed
+              with VLANs per floor or per device type (admin stations, servers, classroom equipment), and
+              it's something I'm considering for a future revision of the project.
+            </p>
+            <p class="lede-en">
+              During that internship I also took part in building a real company network from scratch,
+              including implementing internal VLANs to segment traffic between departments and floors. It
+              wasn't a classroom exercise: it meant documenting real needs, cabling, configuring managed
+              switches, and verifying that each VLAN could see exactly what it was supposed to see and
+              nothing more.
+            </p>
+            <p class="lede-en">
+              I also administered databases hosted on virtualized systems and on different company
+              servers, which included managing them within the corporate network itself: access
+              permissions, where the servers sat in the internal topology, and how those services
+              communicated with the rest of the infrastructure.
+            </p>
+            <p class="lede-en">
+              I'm leaving this here as an anecdote, but also as something I think is relevant: an academic
+              project like this one lays the groundwork (VLSM, routing, DHCP, DNS), but it's in a real work
+              environment where that groundwork gets tested against details that don't always show up in
+              class, like VLANs or managing databases in production.
+            </p>
+          </section>
+
+        </div>
+
+      </article>
+
+      <footer class="term-footer">
+        <p class="prompt-line">
+          <span class="prompt-user">pablo@pantheontech</span><span class="prompt-sep">:</span><span class="prompt-path">~/blog/pantheontech</span><span class="prompt-dollar">$</span>
+          <span class="typed-cmd blink-cursor">_</span>
+        </p>
+        <p class="license-line">
+          © 2026 Pablo · PantheonTech — contenido bajo licencia
+          <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.es" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+
+</body>
+</html>
