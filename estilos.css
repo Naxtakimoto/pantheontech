@@ -424,11 +424,21 @@ body {
 /* ---------- Tablas de datos (VLSM, IPs, rutas) ---------- */
 
 .article-section table {
+  display: block;
+  overflow-x: auto;
   width: 100%;
   border-collapse: collapse;
   margin: 8px 0 24px;
   font-size: 13px;
   font-family: var(--font-mono);
+  -webkit-overflow-scrolling: touch;
+}
+
+.article-section tbody,
+.article-section thead {
+  display: table;
+  width: 100%;
+  table-layout: auto;
 }
 
 .article-section th,
@@ -452,13 +462,6 @@ body {
 
 .article-section tr:nth-child(even) td {
   background: rgba(255, 255, 255, 0.015);
-}
-
-@media (max-width: 640px) {
-  .article-section table {
-    display: block;
-    overflow-x: auto;
-  }
 }
 
 /* ---------- Figuras (capturas del PDF) ---------- */
