@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El día que reconstruí el arranque UEFI de un LG Gram sin perder nada ~ PantheonTech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../estilos.css">
+</head>
+<body>
+
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <div class="term-window">
+
+    <header class="term-bar">
+      <div class="term-dots">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+      </div>
+      <div class="term-title">pablo@pantheontech: ~/blog/pantheontech/post_7</div>
+      <div class="term-bar-spacer"></div>
+    </header>
+
+    <main class="term-body">
+
+      <a class="back-link" href="../../index.html">
+        <span class="arrow">←</span> volver al índice · back to index
+      </a>
+
+      <article>
+
+        <header class="article-header">
+          <p class="article-meta-line">
+            post_7.html <span class="sep">·</span> soporte técnico, windows, uefi, hardware <span class="sep">·</span> 07
+          </p>
+          <h1 class="article-title">
+            El día que reconstruí el arranque UEFI de un LG Gram sin perder nada
+            <span class="article-title-en">The day I rebuilt a LG Gram's UEFI boot from scratch without losing anything</span>
+          </h1>
+        </header>
+
+        <div class="article-body">
+
+          <section class="article-section">
+            <h2>
+              El problema
+              <span class="h2-en">The problem</span>
+            </h2>
+            <p>
+              Me llegó un portátil LG Gram que, al encenderlo, entraba directo en un bucle de "LG
+              Recovery" y no salía de ahí. Cuando intentaba abrir el Boot Menu de la BIOS para ver qué
+              opciones de arranque había, el "Windows Boot Manager" ni siquiera aparecía en la lista. Es
+              decir, el firmware no tenía ni idea de dónde arrancar Windows.
+            </p>
+            <p>
+              La condición que me puse (y que me pidieron) era clara: arreglarlo sin perder archivos y sin
+              recurrir a restaurar el equipo a valores de fábrica. Nada de empezar de cero borrando todo,
+              que es la salida fácil pero no la que quería.
+            </p>
+            <p class="lede-en">
+              I got an LG Gram laptop that, on boot, went straight into an "LG Recovery" loop and wouldn't
+              get out of it. When I tried opening the BIOS Boot Menu to see what boot options were
+              available, "Windows Boot Manager" wasn't even on the list. In other words, the firmware had no
+              idea where to boot Windows from.
+            </p>
+            <p class="lede-en">
+              The condition I set for myself (and that I was asked to keep) was clear: fix it without
+              losing any files and without resorting to a factory reset. No starting from zero by wiping
+              everything, which is the easy way out but not the one I wanted.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Bitácora de resolución
+              <span class="h2-en">Resolution log</span>
+            </h2>
+            <p>
+              Voy a dejar esto tal cual lo fui haciendo, con los errores incluidos, porque el camino hasta
+              la solución cuenta tanto como la propia solución.
+            </p>
+            <p class="lede-en">
+              I'm leaving this exactly as I went through it, errors included, because the road to the fix
+              matters as much as the fix itself.
+            </p>
+
+            <h3>1. Intento de recuperación estándar (y el bucle)</h3>
+            <p>
+              Lo primero, lo obvio: arrancar desde un USB de instalación de Windows y usar la opción
+              "Reparar equipo". Pero el instalador se metía en su propio bucle, reiniciando el equipo una y
+              otra vez y volviendo a cargar siempre el USB, sin avanzar.
+            </p>
+            <p>
+              Para saltarme ese bucle usé un atajo que no todo el mundo conoce: <code>Shift + F10</code>
+              (en portátiles con teclas de función compartidas, <code>Shift + Fn + F10</code>) directamente
+              en la pantalla de bienvenida del instalador. Eso abre el Símbolo del Sistema en caliente, sin
+              tener que avanzar por el asistente.
+            </p>
+            <p class="lede-en">
+              First thing, the obvious one: boot from a Windows installation USB and use "Repair your
+              computer". But the installer got stuck in its own loop, restarting the machine over and over
+              and always reloading the USB, without moving forward.
+            </p>
+            <p class="lede-en">
+              To skip that loop I used a shortcut not everyone knows about: <code>Shift + F10</code> (on
+              laptops with shared function keys, <code>Shift + Fn + F10</code>) right on the installer's
+              welcome screen. That opens the Command Prompt on the spot, without having to go through the
+              wizard.
+            </p>
+
+            <h3>2. Los comandos genéricos no valían (MBR vs UEFI)</h3>
+            <p>
+              Probé lo típico, <code>bootrec /fixmbr</code> y <code>bootrec /fixboot</code>, y no hicieron
+              nada. Tenía sentido: los LG Gram modernos usan particionado GPT bajo firmware UEFI, y esos
+              comandos están pensados para el mundo antiguo de MBR. Estaba atacando el problema equivocado.
+            </p>
+            <p class="lede-en">
+              I tried the usual suspects, <code>bootrec /fixmbr</code> and <code>bootrec /fixboot</code>,
+              and they did nothing. Made sense: modern LG Gram laptops use GPT partitioning under UEFI
+              firmware, and those commands are meant for the old MBR world. I was attacking the wrong
+              problem.
+            </p>
+
+            <h3>3. Intentar reparar la partición EFI existente (error 1)</h3>
+            <p>
+              Probé a asignarle una letra a la partición oculta del sistema con <code>diskpart</code>, para
+              luego inyectar los archivos de arranque con <code>bcdboot</code>. Me devolvió esto:
+            </p>
+            <pre><code>Error al intentar copiar archivos de arranque.</code></pre>
+            <p>
+              La partición de arranque original estaba corrupta o bloqueada de alguna forma.
+            </p>
+            <p class="lede-en">
+              I tried assigning a letter to the hidden system partition with <code>diskpart</code>, to then
+              inject the boot files with <code>bcdboot</code>. It gave me the error above. The original boot
+              partition was corrupted or locked somehow.
+            </p>
+
+            <h3>4. Forzar el montaje con mountvol (error 2)</h3>
+            <p>
+              Probé la alternativa de <code>mountvol Z: /s</code>, para saltarme las restricciones de
+              volumen de la consola. El resultado:
+            </p>
+            <pre><code>El sistema no puede encontrar el archivo especificado.</code></pre>
+            <p>
+              Ese error confirmó lo que ya sospechaba: la partición EFI original había desaparecido o
+              estaba tan dañada que ya no era recuperable tal cual. No había nada que reparar, solo
+              reconstruir.
+            </p>
+            <p class="lede-en">
+              I tried the alternative <code>mountvol Z: /s</code>, to skip the console's volume
+              restrictions. That error confirmed what I already suspected: the original EFI partition was
+              gone or so damaged it wasn't recoverable as-is. There was nothing left to repair, only to
+              rebuild.
+            </p>
+
+            <h3>5. La solución definitiva: reconstruir desde cero</h3>
+            <p>
+              Antes de nada, comprobé con <code>dir C:</code> que la partición de datos y los archivos del
+              usuario seguían intactos. Con eso confirmado, me puse a fabricar un sistema de arranque
+              completamente nuevo:
+            </p>
+            <pre><code>diskpart
+select disk 0
+select partition 3          REM la partición principal de Windows
+shrink desired=100          REM libera 100 MB para la nueva partición EFI
+
+create partition efi
+format quick fs=fat32
+assign letter=Z</code></pre>
+            <p>
+              Con la partición EFI nueva ya montada en <code>Z:</code>, lancé la inyección forzada de los
+              archivos de arranque:
+            </p>
+            <pre><code>bcdboot C:\Windows /s Z: /f UEFI /l es-es</code></pre>
+            <p>
+              Y esta vez sí:
+            </p>
+            <pre><code>Archivos de arranque creados correctamente.</code></pre>
+            <p class="lede-en">
+              Before anything else, I checked with <code>dir C:</code> that the data partition and the
+              user's files were still intact. With that confirmed, I set about building a completely new
+              boot system: shrinking the main Windows partition by 100 MB with <code>diskpart</code>,
+              creating a brand new EFI partition in that freed space, formatting it as FAT32, and assigning
+              it the temporary letter <code>Z:</code>. With the new EFI partition mounted, I ran the forced
+              boot file injection with <code>bcdboot</code>, and this time it worked: "Boot files created
+              successfully."
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Resultado final
+              <span class="h2-en">Final result</span>
+            </h2>
+            <p>
+              Al reiniciar el portátil sin el USB, la BIOS reconoció de inmediato el nuevo cargador UEFI:
+              "Windows Boot Manager" ya aparecía en el Boot Menu. El equipo arrancó Windows con normalidad,
+              con el 100% de los datos, configuraciones y archivos del usuario a salvo. Sin restaurar de
+              fábrica, sin perder nada.
+            </p>
+            <p class="lede-en">
+              Rebooting the laptop without the USB, the BIOS immediately recognized the new UEFI loader:
+              "Windows Boot Manager" was already showing up in the Boot Menu. The machine booted into
+              Windows normally, with 100% of the user's data, settings, and files intact. No factory reset,
+              nothing lost.
+            </p>
+          </section>
+
+        </div>
+
+      </article>
+
+      <footer class="term-footer">
+        <p class="prompt-line">
+          <span class="prompt-user">pablo@pantheontech</span><span class="prompt-sep">:</span><span class="prompt-path">~/blog/pantheontech</span><span class="prompt-dollar">$</span>
+          <span class="typed-cmd blink-cursor">_</span>
+        </p>
+        <p class="license-line">
+          © 2026 Pablo · PantheonTech — contenido bajo licencia
+          <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.es" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+
+</body>
+</html>
