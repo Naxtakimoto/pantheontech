@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recuperar espacio de disco y reconstruir el arranque UEFI sin perder Windows ~ PantheonTech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../estilos.css">
+</head>
+<body>
+
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <div class="term-window">
+
+    <header class="term-bar">
+      <div class="term-dots">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+      </div>
+      <div class="term-title">pablo@pantheontech: ~/blog/pantheontech/post_8</div>
+      <div class="term-bar-spacer"></div>
+    </header>
+
+    <main class="term-body">
+
+      <a class="back-link" href="../../index.html">
+        <span class="arrow">←</span> volver al índice · back to index
+      </a>
+
+      <article>
+
+        <header class="article-header">
+          <p class="article-meta-line">
+            post_8.html <span class="sep">·</span> soporte técnico, windows, uefi, particionado <span class="sep">·</span> 08
+          </p>
+          <h1 class="article-title">
+            Recuperar espacio de disco y reconstruir el arranque UEFI sin perder Windows
+            <span class="article-title-en">Reclaiming disk space and rebuilding the UEFI boot without losing Windows</span>
+          </h1>
+        </header>
+
+        <div class="article-body">
+
+          <section class="article-section">
+            <h2>
+              El objetivo
+              <span class="h2-en">The goal</span>
+            </h2>
+            <p>
+              Esta vez el punto de partida no era un fallo, era orden: quería reducir y simplificar las
+              particiones del disco principal para quedarme solo con las indispensables de Windows, y así
+              aprovechar todo el espacio disponible (unos 475 GB) en la unidad <code>(C:)</code>.
+            </p>
+            <p>
+              El estado inicial del disco era un poco caótico: un espacio no asignado de 261 MB, la unidad
+              <code>(C:)</code> con 356 GB, una partición de 97,75 GB que era un residuo de una antigua
+              instalación de Linux que Windows reconocía mal, una partición de recuperación de 1 GB, y otra
+              partición de recuperación de fábrica de LG de 20 GB. Demasiados restos para un disco que en
+              teoría solo tenía que arrancar Windows.
+            </p>
+            <p class="lede-en">
+              This time the starting point wasn't a failure, it was tidiness: I wanted to shrink and
+              simplify the main disk's partitions down to just the essential Windows ones, freeing up all
+              the available space (around 475 GB) for the <code>(C:)</code> drive.
+            </p>
+            <p class="lede-en">
+              The disk's initial state was a bit chaotic: 261 MB of unallocated space, a 356 GB
+              <code>(C:)</code> drive, a 97.75 GB partition left over from an old Linux install that Windows
+              was misreading, a 1 GB recovery partition, and a 20 GB LG factory recovery partition. Too many
+              leftovers for a disk that in theory only needed to boot Windows.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Lo que salió mal
+              <span class="h2-en">What went wrong</span>
+            </h2>
+
+            <h3>1. Perdí el arranque y me quedé en LG Recovery</h3>
+            <p>
+              Fui a eliminar las particiones residuales y a extender <code>(C:)</code> con MiniTool
+              Partition Wizard, y para aplicar los cambios el equipo pidió reiniciar. Al volver a arrancar,
+              la UEFI había perdido la ruta del cargador de arranque de Windows, y el portátil se fue solo
+              a la interfaz de LG Recovery. Ya me había pasado antes con otro LG Gram (post 7), así que en
+              cuanto lo vi supe más o menos por dónde iban los tiros.
+            </p>
+            <p class="lede-en">
+              I went to delete the leftover partitions and extend <code>(C:)</code> with MiniTool
+              Partition Wizard, and applying the changes required a reboot. On restart, the UEFI had lost
+              the path to the Windows boot loader, and the laptop went straight into the LG Recovery
+              interface on its own. This had already happened to me on another LG Gram before (post 7), so
+              the moment I saw it I had a rough idea of what was going on.
+            </p>
+
+            <h3>2. La causa: la partición EFI había desaparecido</h3>
+            <p>
+              La partición de arranque de Windows (la EFI / System, de 100 MB) ya no estaba presente ni
+              registrada en el disco. Sin ella, no había ni rastro del <code>bootmgr</code>, así que el
+              firmware no tenía dónde arrancar.
+            </p>
+            <p class="lede-en">
+              The Windows boot partition (the EFI / System one, 100 MB) was no longer present or
+              registered on the disk. Without it, there was no trace of <code>bootmgr</code>, so the
+              firmware had nowhere to boot from.
+            </p>
+
+            <h3>3. Y de propina, una errata tonta</h3>
+            <p>
+              Al intentar regenerar el entorno de arranque desde la consola, escribí <code>bcboot</code> en
+              vez de <code>bcdboot</code>. Consola de comando no reconocido, y a revisar lo que había
+              tecleado.
+            </p>
+            <pre><code>bcboot C:\Windows /s S: /f UEFI
+
+'bcboot' no se reconoce como un comando interno o externo...</code></pre>
+            <p class="lede-en">
+              While trying to regenerate the boot environment from the console, I typed
+              <code>bcboot</code> instead of <code>bcdboot</code>. Command not recognized, and back to
+              double-checking what I'd typed.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              La solución aplicada
+              <span class="h2-en">The fix I applied</span>
+            </h2>
+            <p>
+              Arranqué el portátil desde un pendrive de instalación de Windows para tener acceso a la
+              consola de comandos. Con <code>diskpart</code> recreé la partición EFI desde cero: 100 MB,
+              formateada en FAT32, con la letra temporal <code>S:</code>.
+            </p>
+            <pre><code>diskpart
+select disk 0
+create partition efi size=100
+format quick fs=fat32
+assign letter=S</code></pre>
+            <p>
+              Y ya con el comando bien escrito esta vez, regeneré los archivos de arranque:
+            </p>
+            <pre><code>bcdboot C:\Windows /s S: /f UEFI</code></pre>
+            <p>
+              Se ejecutó sin errores, reescribiendo los archivos del sistema necesarios para arrancar.
+            </p>
+            <p class="lede-en">
+              I booted the laptop from a Windows installation USB to get access to the command console.
+              With <code>diskpart</code> I recreated the EFI partition from scratch: 100 MB, formatted as
+              FAT32, with the temporary letter <code>S:</code>. Then, with the command typed correctly this
+              time, I regenerated the boot files. It ran without errors, rewriting the system files needed
+              to boot.
+            </p>
+          </section>
+
+          <section class="article-section">
+            <h2>
+              Resultado
+              <span class="h2-en">Result</span>
+            </h2>
+            <p>
+              Windows volvió a arrancar con normalidad de forma independiente, sin el USB. El sistema
+              operativo y los datos del usuario en la unidad <code>(C:)</code> se mantuvieron intactos en
+              todo momento durante todo el proceso, tanto en el susto del arranque perdido como en la
+              reconstrucción de la partición EFI.
+            </p>
+            <p class="lede-en">
+              Windows booted normally again on its own, without the USB. The operating system and the
+              user's data on the <code>(C:)</code> drive stayed intact the whole time, through both the
+              boot scare and the EFI partition rebuild.
+            </p>
+          </section>
+
+        </div>
+
+      </article>
+
+      <footer class="term-footer">
+        <p class="prompt-line">
+          <span class="prompt-user">pablo@pantheontech</span><span class="prompt-sep">:</span><span class="prompt-path">~/blog/pantheontech</span><span class="prompt-dollar">$</span>
+          <span class="typed-cmd blink-cursor">_</span>
+        </p>
+        <p class="license-line">
+          © 2026 Pablo · PantheonTech — contenido bajo licencia
+          <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.es" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>
+        </p>
+      </footer>
+
+    </main>
+  </div>
+
+</body>
+</html>
